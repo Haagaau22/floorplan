@@ -5,7 +5,7 @@ import semanticFloorplanSchema from '../../schema/floorplan-v2.schema.json'
 interface Env {
   FLOORPLANS: R2Bucket
   HMAC_SECRET: string
-  EDITOR_TOKEN?: string
+  ALLOW_UNAUTHENTICATED_EDITS?: string
   ALLOWED_CLOCK_SKEW_SECONDS?: string
 }
 
@@ -92,14 +92,6 @@ function safeEqual(first: string, second: string): boolean {
     result |= first.charCodeAt(index) ^ second.charCodeAt(index)
   }
   return result === 0
-}
-
-export function verifyEditorToken(request: Request, expectedToken?: string): boolean {
-  if (!expectedToken) return false
-  const authorization = request.headers.get('Authorization') ?? ''
-  if (!authorization.startsWith('Bearer ')) return false
-  const providedToken = authorization.slice('Bearer '.length)
-  return safeEqual(providedToken, expectedToken)
 }
 
 export async function createWriteSignature(
@@ -290,7 +282,8 @@ async function readProject(env: Env, projectId: string, headOnly = false): Promi
 }
 
 async function writeProject(request: Request, env: Env, projectId: string): Promise<Response> {
-  if (!env.HMAC_SECRET && !env.EDITOR_TOKEN) return jsonResponse({ error: 'write_not_configured' }, 503)
+  const openEditor = env.ALLOW_UNAUTHENTICATED_EDITS === 'true'
+  if (!openEditor && !env.HMAC_SECRET) return jsonResponse({ error: 'write_not_configured' }, 503)
   const declaredLength = Number(request.headers.get('Content-Length') ?? 0)
   if (declaredLength > MAX_BODY_BYTES) return jsonResponse({ error: 'payload_too_large' }, 413)
 
@@ -298,7 +291,7 @@ async function writeProject(request: Request, env: Env, projectId: string): Prom
   if (body.byteLength === 0) return jsonResponse({ error: 'empty_payload' }, 400)
   if (body.byteLength > MAX_BODY_BYTES) return jsonResponse({ error: 'payload_too_large' }, 413)
   const clockSkew = Number(env.ALLOWED_CLOCK_SKEW_SECONDS ?? 300)
-  const authorized = verifyEditorToken(request, env.EDITOR_TOKEN)
+  const authorized = openEditor
     || Boolean(env.HMAC_SECRET && await verifyWriteSignature(request, body, env.HMAC_SECRET, clockSkew))
   if (!authorized) {
     return jsonResponse({ error: 'invalid_signature' }, 401)

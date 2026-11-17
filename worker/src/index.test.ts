@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createWriteSignature, preserveManualBoundaries, validateFloorplanPayload, verifyEditorToken, verifyWriteSignature } from './index'
+import { createWriteSignature, preserveManualBoundaries, validateFloorplanPayload, verifyWriteSignature } from './index'
 
 const secret = 'test-only-secret-with-enough-entropy'
 const timestamp = '1794900000'
@@ -35,22 +35,6 @@ describe('Worker HMAC writes', () => {
     const body = new TextEncoder().encode('{}').buffer
     const request = await signedRequest(body)
     await expect(verifyWriteSignature(request, body, secret, 300, Number(timestamp) + 301)).resolves.toBe(false)
-  })
-})
-
-describe('Worker browser editor authentication', () => {
-  it('accepts the configured bearer token', () => {
-    const request = new Request('https://floorplan.example/api/projects/apartment', {
-      headers: { Authorization: 'Bearer editor-secret' },
-    })
-    expect(verifyEditorToken(request, 'editor-secret')).toBe(true)
-  })
-
-  it('rejects missing or incorrect bearer tokens', () => {
-    expect(verifyEditorToken(new Request('https://floorplan.example'), 'editor-secret')).toBe(false)
-    expect(verifyEditorToken(new Request('https://floorplan.example', {
-      headers: { Authorization: 'Bearer wrong' },
-    }), 'editor-secret')).toBe(false)
   })
 })
 

@@ -413,9 +413,10 @@ button { color: inherit; }
 .boundary-editor__issues { margin-top: 11px; padding: 10px; border: 1px solid #e8b7a4; border-radius: 9px; background: #fff1e9; color: #8f3d22; }
 .boundary-editor__issues strong { font-size: 10px; }
 .boundary-editor__issues ul { max-height: 90px; margin: 6px 0 0; overflow: auto; padding-left: 17px; font-size: 9px; line-height: 1.5; }
-.boundary-editor__save { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #e2e5de; }
+.boundary-editor__save { display: grid; gap: 6px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #e2e5de; }
 .boundary-editor__save button { border-color: var(--ink); background: var(--ink); color: white; }
-.boundary-editor__save small { grid-column: 1 / -1; color: #77827d; font-size: 9px; }
+.boundary-editor__save small { color: #77827d; font-size: 9px; }
+.boundary-editor__open-warning { color: #9a542f; font-size: 9px; }
 
 .room-list { padding: 22px 18px 30px; }
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 6px; }

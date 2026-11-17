@@ -248,12 +248,12 @@ function cancelCreateSpace() {
   draftBoundary.value = []
 }
 
-async function saveEdits(token: string) {
+async function saveEdits() {
   if (!editDirty.value || editIssues.value.length) return
   saving.value = true
   saveMessage.value = ''
   try {
-    const result = await saveFloorplan(workingData.value, token)
+    const result = await saveFloorplan(workingData.value)
     savedSpaces.value = JSON.stringify(level.spaces)
     saveMessage.value = `已保存 · ${new Date(result.uploadedAt).toLocaleString('zh-CN', { hour12: false })}`
   } catch (error) {

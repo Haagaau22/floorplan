@@ -7,7 +7,9 @@
     "enabled": true
   },
   "vars": {
-    "ALLOWED_CLOCK_SKEW_SECONDS": "300"
+    "ALLOWED_CLOCK_SKEW_SECONDS": "300",
+    // Temporary while validating the editor. Replace with auth-worker.
+    "ALLOW_UNAUTHENTICATED_EDITS": "true"
   },
   "r2_buckets": [
     {

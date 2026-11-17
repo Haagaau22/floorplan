@@ -40,7 +40,6 @@ function fixture(): SemanticFloorplanData {
 describe('SemanticFloorPlanViewer boundary editing', () => {
   beforeEach(() => {
     saveFloorplanMock.mockClear()
-    sessionStorage.clear()
   })
 
   it('edits, undoes, and saves a room boundary', async () => {
@@ -62,7 +61,6 @@ describe('SemanticFloorPlanViewer boundary editing', () => {
     await redoButton.trigger('click')
     expect(wrapper.findAll('.boundary-edit-handle')).toHaveLength(5)
 
-    await wrapper.find('input[aria-label="编辑口令"]').setValue('editor-secret')
     const saveButton = wrapper.findAll('.boundary-editor button').find((button) => button.text() === '保存到服务器')!
     expect(saveButton.attributes('disabled')).toBeUndefined()
     await saveButton.trigger('click')
@@ -70,7 +68,7 @@ describe('SemanticFloorPlanViewer boundary editing', () => {
 
     expect(saveFloorplanMock).toHaveBeenCalledOnce()
     expect(saveFloorplanMock.mock.calls[0][0].levels[0].spaces[0].boundary).toHaveLength(5)
-    expect(saveFloorplanMock.mock.calls[0][1]).toBe('editor-secret')
+    expect(saveFloorplanMock.mock.calls[0]).toHaveLength(1)
     expect(wrapper.text()).toContain('已保存')
   })
 })

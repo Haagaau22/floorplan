@@ -26,10 +26,9 @@ const emit = defineEmits<{
   beginCreate: [name: string, kind: SemanticSpace['kind']]
   finishCreate: []
   cancelCreate: []
-  save: [token: string]
+  save: []
 }>()
 
-const editorToken = ref(sessionStorage.getItem('floorplan-editor-token') ?? '')
 const newSpaceName = ref('公共区域')
 const newSpaceKind = ref<SemanticSpace['kind']>('utility')
 
@@ -41,12 +40,6 @@ function beginCreate() {
   emit('beginCreate', newSpaceName.value.trim() || '公共区域', newSpaceKind.value)
 }
 
-function save() {
-  const token = editorToken.value.trim()
-  if (!token) return
-  sessionStorage.setItem('floorplan-editor-token', token)
-  emit('save', token)
-}
 </script>
 
 <template>
@@ -104,8 +97,8 @@ function save() {
     </div>
 
     <footer class="boundary-editor__save">
-      <input v-model="editorToken" type="password" autocomplete="current-password" placeholder="编辑口令" aria-label="编辑口令" />
-      <button type="button" :disabled="!dirty || issues.length > 0 || !editorToken.trim() || saving" @click="save">
+      <span class="boundary-editor__open-warning">功能验证阶段：保存暂不需要登录</span>
+      <button type="button" :disabled="!dirty || issues.length > 0 || saving" @click="emit('save')">
         {{ saving ? '保存中…' : '保存到服务器' }}
       </button>
       <small v-if="saveMessage">{{ saveMessage }}</small>
