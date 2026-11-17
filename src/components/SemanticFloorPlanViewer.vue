@@ -201,6 +201,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
             <polygon v-for="space in excludedSpaces" :key="space.id" :points="pointsAttribute(space.boundary)" class="semantic-excluded" />
           </g>
 
+          <g class="semantic-space-hits">
+            <path
+              v-for="space in regularSpaces"
+              :key="space.id"
+              :d="pathD(space.boundary, true)"
+              :class="['space-hit', { 'space-hit--selected': selectedSpace?.id === space.id }]"
+              tabindex="0" role="button" :aria-label="space.name"
+              @click.stop="selectSpace(space)" @keydown.enter.stop="selectSpace(space)"
+            />
+          </g>
+
           <g v-show="layerVisibility.structure" class="semantic-structure">
             <path v-if="detailsPath" :d="detailsPath" class="semantic-details" />
             <polyline v-for="wall in level.walls" :key="wall.id" :points="pointsAttribute(wall.centerline)" :stroke-width="wall.thickness" class="semantic-wall" />
@@ -232,25 +243,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
             />
           </g>
 
-          <g class="semantic-space-hits">
-            <path
-              v-for="space in regularSpaces"
-              :key="space.id"
-              :d="pathD(space.boundary, true)"
-              :class="['space-hit', { 'space-hit--selected': selectedSpace?.id === space.id }]"
-              tabindex="0" role="button" :aria-label="space.name"
-              @click.stop="selectSpace(space)" @keydown.enter.stop="selectSpace(space)"
-            />
-          </g>
-
           <g v-show="layerVisibility.labels" class="semantic-labels">
             <g
               v-for="space in level.spaces.filter((item) => item.labelStyle !== 'hidden')"
               :key="space.id"
               :transform="`translate(${space.labelPosition.join(' ')}) scale(${labelScale})`"
-              :class="space.kind === 'excluded' ? 'semantic-area-tag' : 'semantic-room-tag'"
+              :class="[
+                space.kind === 'excluded' ? 'semantic-area-tag' : 'semantic-room-tag',
+                { 'semantic-room-tag--selected': selectedSpace?.id === space.id },
+              ]"
             >
-              <rect x="-450" y="-220" width="900" height="440" rx="130" />
+              <rect v-if="space.kind === 'excluded'" x="-450" y="-220" width="900" height="440" rx="130" />
               <text y="12">{{ space.number ?? space.name }}</text>
             </g>
           </g>

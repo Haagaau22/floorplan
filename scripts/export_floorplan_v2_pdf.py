@@ -148,13 +148,16 @@ def export(source: Path, target: Path, level_id: str | None = None) -> None:
         x, y = point(space["labelPosition"])
         label = space.get("number") or space["name"]
         is_room_tag = space.get("labelStyle") == "room-tag"
-        pdf.setFont(label_font, 5.6 if is_room_tag else 6.5)
-        pdf.setFillColor(white if space.get("labelStyle") == "room-tag" else HexColor("#514c45"))
+        baseline_y = y - (2.0 if is_room_tag else 2.2)
+        pdf.setFont(label_font, 6.2 if is_room_tag else 6.5)
         if is_room_tag:
-            pdf.setFillColor(HexColor("#173f3b"))
-            pdf.roundRect(x - 5 * MM_TO_PT, y - 1.8 * MM_TO_PT, 10 * MM_TO_PT, 3.6 * MM_TO_PT, 1.1 * MM_TO_PT, fill=1, stroke=0)
             pdf.setFillColor(white)
-        pdf.drawCentredString(x, y - (1.8 if is_room_tag else 2.2), label)
+            for offset_x, offset_y in ((-.5, 0), (.5, 0), (0, -.5), (0, .5)):
+                pdf.drawCentredString(x + offset_x, baseline_y + offset_y, label)
+            pdf.setFillColor(HexColor("#173f3b"))
+        else:
+            pdf.setFillColor(HexColor("#514c45"))
+        pdf.drawCentredString(x, baseline_y, label)
 
     pdf.setFillColor(HexColor("#173f3b"))
     pdf.setFont(label_font, 15)

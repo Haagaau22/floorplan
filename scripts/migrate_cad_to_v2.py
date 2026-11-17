@@ -8,7 +8,9 @@ the generated JSON, including reusable block definitions and their instances.
 from __future__ import annotations
 
 import argparse
+import heapq
 import json
+import math
 import re
 from pathlib import Path
 
@@ -38,6 +40,8 @@ ROOM_BOUNDARIES_LOCAL: dict[int, tuple[int, int, int, int] | list[list[int]]] = 
         [20_653, 15_745],
         [13_313, 15_745],
     ],
+    # Rooms 3 and 4 share a stepped wall: the step begins at the corridor-side
+    # partition (x=23_321), not at the furniture outlines inside room 4.
     3: [
         [13_313, 15_854],
         [20_653, 15_854],
@@ -46,18 +50,14 @@ ROOM_BOUNDARIES_LOCAL: dict[int, tuple[int, int, int, int] | list[list[int]]] = 
         [23_321, 17_251],
         [24_901, 17_251],
         [24_901, 19_080],
-        [21_821, 19_080],
-        [21_821, 18_456],
-        [19_805, 18_456],
-        [19_805, 18_644],
+        [23_321, 19_080],
+        [23_321, 18_644],
         [13_313, 18_644],
     ],
     4: [
         [13_313, 18_760],
-        [19_805, 18_760],
-        [19_805, 18_576],
-        [21_821, 18_576],
-        [21_821, 19_200],
+        [23_321, 18_760],
+        [23_321, 19_200],
         [24_901, 19_200],
         [24_901, 22_094],
         [13_313, 22_094],
@@ -102,20 +102,13 @@ ROOM_BOUNDARIES_LOCAL: dict[int, tuple[int, int, int, int] | list[list[int]]] = 
     28: (57_545, 1_028, 60_736, 13_876),
     29: (54_158, 1_028, 57_427, 13_876),
     30: (50_611, 1_028, 54_041, 13_876),
-    31: [
-        [47_157, 1_028],
-        [50_488, 1_028],
-        [50_488, 13_876],
-        [46_485, 13_876],
-        [46_485, 8_755],
-        [47_157, 8_755],
-    ],
+    # Rooms 31 and 32 are divided by one continuous vertical wall. The lower
+    # furniture edge must not introduce a sideways step into this boundary.
+    31: (47_157, 1_028, 50_488, 13_876),
     32: [
         [43_670, 1_028],
         [47_033, 1_028],
-        [47_033, 8_755],
-        [46_485, 8_755],
-        [46_485, 13_876],
+        [47_033, 13_876],
         [41_740, 13_876],
         [41_740, 10_772],
         [43_670, 10_772],
@@ -158,6 +151,123 @@ def apartment_boundary(number: int, fallback: list[list[int]]) -> list[list[int]
 
 def integer(value: float) -> int:
     return int(round(float(value)))
+
+
+def point_to_polygon_distance(x: float, y: float, polygon: list[list[int]]) -> float:
+    inside = False
+    distance_squared = math.inf
+    for index, first in enumerate(polygon):
+        second = polygon[(index + 1) % len(polygon)]
+        ax, ay = first
+        bx, by = second
+        if (ay > y) != (by > y) and x < (bx - ax) * (y - ay) / (by - ay) + ax:
+            inside = not inside
+        dx, dy = bx - ax, by - ay
+        if dx or dy:
+            ratio = max(0.0, min(1.0, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy)))
+            nearest_x, nearest_y = ax + ratio * dx, ay + ratio * dy
+        else:
+            nearest_x, nearest_y = ax, ay
+        distance_squared = min(distance_squared, (x - nearest_x) ** 2 + (y - nearest_y) ** 2)
+    distance = math.sqrt(distance_squared)
+    return distance if inside else -distance
+
+
+def polygon_centroid(polygon: list[list[int]]) -> tuple[float, float]:
+    area_twice = 0.0
+    x_sum = 0.0
+    y_sum = 0.0
+    for index, first in enumerate(polygon):
+        second = polygon[(index + 1) % len(polygon)]
+        cross = first[0] * second[1] - second[0] * first[1]
+        area_twice += cross
+        x_sum += (first[0] + second[0]) * cross
+        y_sum += (first[1] + second[1]) * cross
+    if not area_twice:
+        return polygon[0][0], polygon[0][1]
+    return x_sum / (3 * area_twice), y_sum / (3 * area_twice)
+
+
+def polygon_visual_center(polygon: list[list[int]], precision: float = 40.0) -> list[int]:
+    """Find a stable label anchor at the polygon's pole of inaccessibility."""
+    min_x = min(point[0] for point in polygon)
+    min_y = min(point[1] for point in polygon)
+    max_x = max(point[0] for point in polygon)
+    max_y = max(point[1] for point in polygon)
+    cell_size = min(max_x - min_x, max_y - min_y)
+    if not cell_size:
+        return [integer(min_x), integer(min_y)]
+
+    def cell(x: float, y: float, half_size: float) -> tuple[float, float, float, float, float]:
+        distance = point_to_polygon_distance(x, y, polygon)
+        maximum = distance + half_size * math.sqrt(2)
+        return (-maximum, x, y, half_size, distance)
+
+    queue: list[tuple[float, float, float, float, float]] = []
+    half_size = cell_size / 2
+    x = min_x
+    while x < max_x:
+        y = min_y
+        while y < max_y:
+            heapq.heappush(queue, cell(x + half_size, y + half_size, half_size))
+            y += cell_size
+        x += cell_size
+
+    centroid_x, centroid_y = polygon_centroid(polygon)
+    best = cell(centroid_x, centroid_y, 0)
+    bbox_center = cell((min_x + max_x) / 2, (min_y + max_y) / 2, 0)
+    if bbox_center[4] > best[4]:
+        best = bbox_center
+
+    while queue:
+        current = heapq.heappop(queue)
+        _, cell_x, cell_y, half_size, distance = current
+        if distance > best[4]:
+            best = current
+        if -current[0] - best[4] <= precision:
+            continue
+        half_size /= 2
+        for offset_x in (-half_size, half_size):
+            for offset_y in (-half_size, half_size):
+                heapq.heappush(queue, cell(cell_x + offset_x, cell_y + offset_y, half_size))
+    return [integer(best[1]), integer(best[2])]
+
+
+def is_room_number_circle(entity, label_positions: list[list[float]]) -> bool:
+    if entity.dxftype() != "CIRCLE":
+        return False
+    radius = float(entity.dxf.radius)
+    if not 210 <= radius <= 225:
+        return False
+    center = entity.dxf.center
+    return any(math.hypot(center.x - x, center.y - y) <= 320 for x, y in label_positions)
+
+
+def room_label_anchors(source_entities, spaces: list[dict], xmin: float, ymax: float) -> dict[int, list[int]]:
+    circles = [
+        entity
+        for entity in source_entities
+        if entity.dxftype() == "CIRCLE" and 210 <= float(entity.dxf.radius) <= 225
+    ]
+    anchors: dict[int, list[int]] = {}
+    for space in spaces:
+        label_x, label_y = space["labelPosition"]
+        candidates = [
+            entity
+            for entity in circles
+            if math.hypot(entity.dxf.center.x - label_x, entity.dxf.center.y - label_y) <= 320
+        ]
+        if not candidates:
+            continue
+        nearest = min(
+            candidates,
+            key=lambda entity: math.hypot(entity.dxf.center.x - label_x, entity.dxf.center.y - label_y),
+        )
+        anchors[int(space["label"])] = [
+            integer(nearest.dxf.center.x - xmin),
+            integer(ymax - nearest.dxf.center.y),
+        ]
+    return anchors
 
 
 def safe_id(value: str) -> str:
@@ -220,6 +330,9 @@ def migrate(args: argparse.Namespace) -> dict:
     document = ezdxf.readfile(args.source)
     modelspace = document.modelspace()
     source_entities = [entity for entity in modelspace if quick_entity_overlap(entity, tuple(args.bounds))]
+    baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
+    room_label_positions = [space["labelPosition"] for space in baseline["spaces"]]
+    label_anchors = room_label_anchors(source_entities, baseline["spaces"], xmin, ymax)
 
     insert_entities = [entity for entity in source_entities if entity.dxftype() == "INSERT"]
     block_names = sorted({entity.dxf.name for entity in insert_entities})
@@ -249,6 +362,8 @@ def migrate(args: argparse.Namespace) -> dict:
     for entity in source_entities:
         if entity.dxftype() in {"INSERT", "TEXT", "MTEXT", "DIMENSION"}:
             continue
+        if is_room_number_circle(entity, room_label_positions):
+            continue
         try:
             leaves = disassemble.recursive_decompose((entity,))
             for leaf in leaves:
@@ -261,20 +376,22 @@ def migrate(args: argparse.Namespace) -> dict:
         except (TypeError, ValueError, AttributeError, ezdxf.DXFError):
             continue
 
-    baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
     spaces = []
     for space in baseline["spaces"]:
         number = space["label"]
         room_num = int(number)
         fallback_boundary = [[integer(x - xmin), integer(ymax - y)] for x, y in space["selectionBoundary"]]
-        default_label_pos = [integer(space["labelPosition"][0] - xmin), integer(ymax - space["labelPosition"][1])]
+        boundary = apartment_boundary(room_num, fallback_boundary)
         spaces.append({
             "id": f"room-{number}",
             "kind": "apartment",
             "name": f"{number}号房",
             "number": number,
-            "boundary": apartment_boundary(room_num, fallback_boundary),
-            "labelPosition": ROOM_LABEL_OVERRIDES_LOCAL.get(room_num, default_label_pos),
+            "boundary": boundary,
+            "labelPosition": label_anchors.get(
+                room_num,
+                ROOM_LABEL_OVERRIDES_LOCAL.get(room_num, polygon_visual_center(boundary)),
+            ),
             "labelStyle": "room-tag",
             "boundaryStatus": "verified",
         })

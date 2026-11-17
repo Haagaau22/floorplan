@@ -42,7 +42,8 @@ def render(source: Path, target: Path, level_id: str | None = None) -> None:
             x, y = space["labelPosition"]
             label = space.get("number") or space["name"]
             label_class = "room-label" if space.get("labelStyle") == "room-tag" else "area-label"
-            labels.append(f'<g class="{label_class}" transform="translate({x} {y})"><rect x="-430" y="-210" width="860" height="420" rx="120"/><text text-anchor="middle" dominant-baseline="central">{html.escape(label)}</text></g>')
+            background = '' if label_class == "room-label" else '<rect x="-430" y="-210" width="860" height="420" rx="120"/>'
+            labels.append(f'<g class="{label_class}" transform="translate({x} {y})">{background}<text text-anchor="middle" dominant-baseline="central">{html.escape(label)}</text></g>')
 
     wall_elements = [f'<polyline points="{svg_points(wall["centerline"])}" stroke-width="{wall["thickness"]}"/>' for wall in level["walls"]]
     opening_elements: list[str] = []
@@ -89,8 +90,7 @@ def render(source: Path, target: Path, level_id: str | None = None) -> None:
   .template-detail {{ stroke-width:14; }}
   .template-fill {{ fill:#d7dfdc; }}
   .details {{ fill:none; stroke:#687370; stroke-width:18; }}
-  .room-label rect {{ fill:#173f3b; stroke:#fbfaf6; stroke-width:22; }}
-  .room-label text {{ fill:white; font:700 250px Arial,sans-serif; }}
+  .room-label text {{ fill:#173f3b; stroke:#fbfaf6; stroke-width:70px; paint-order:stroke fill; stroke-linejoin:round; font:700 270px Arial,sans-serif; }}
   .area-label rect {{ fill:#f0ece2; stroke:#756f65; stroke-width:20; }}
   .area-label text {{ fill:#514c45; font:600 170px Arial,'PingFang SC',sans-serif; }}
 </style>

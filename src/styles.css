@@ -156,8 +156,8 @@ button { color: inherit; }
 
 .cad-text-layer { fill: #293632; font-family: Arial, "PingFang SC", sans-serif; pointer-events: none; }
 .space-hit { fill: transparent; stroke: transparent; stroke-width: 1.5; vector-effect: non-scaling-stroke; pointer-events: all; cursor: pointer; transition: fill .16s ease, stroke .16s ease; }
-.space-hit:hover, .space-hit:focus-visible { fill: rgba(229, 109, 66, .16); stroke: rgba(229, 109, 66, .88); outline: none; }
-.space-hit--selected { fill: rgba(229, 109, 66, .2); stroke: var(--accent); }
+.space-hit:hover, .space-hit:focus-visible { fill: rgba(229, 109, 66, .1); stroke: rgba(229, 109, 66, .88); outline: none; }
+.space-hit--selected { fill: rgba(229, 109, 66, .14); stroke: var(--accent); }
 .selected-marker { pointer-events: none; }
 .selected-marker circle { fill: var(--accent); stroke: #fff8f1; stroke-width: 90; }
 .selected-marker text { fill: white; font-size: 320px; font-weight: 800; text-anchor: middle; }
@@ -330,6 +330,7 @@ button { color: inherit; }
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+.semantic-structure { pointer-events: none; }
 .semantic-wall { fill: none; stroke: #182522; stroke-linecap: square; stroke-linejoin: miter; }
 .semantic-opening-cut { stroke: #faf9f3; stroke-linecap: butt; }
 .semantic-window { stroke: #4d7775; stroke-width: 2.3; vector-effect: non-scaling-stroke; }
@@ -339,9 +340,9 @@ button { color: inherit; }
 .semantic-instances .template-fill { fill: #d8dfdc; }
 .semantic-excluded { fill: #b8afa1; fill-opacity: .22; stroke: #8f8678; stroke-width: 1.1; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .semantic-room-tag, .semantic-area-tag { pointer-events: none; }
-.semantic-room-tag rect { fill: #17463f; stroke: #fffaf2; stroke-width: 24; }
 .semantic-room-tag text, .semantic-area-tag text { text-anchor: middle; dominant-baseline: central; font-family: Inter, "PingFang SC", sans-serif; font-weight: 760; }
-.semantic-room-tag text { fill: white; font-size: 250px; }
+.semantic-room-tag text { fill: #17463f; stroke: #fffaf2; stroke-width: 70px; paint-order: stroke fill; stroke-linejoin: round; font-size: 270px; }
+.semantic-room-tag--selected text { fill: #c84f2c; }
 .semantic-area-tag rect { fill: #f1ede3; stroke: #7d7569; stroke-width: 20; }
 .semantic-area-tag text { fill: #514a41; font-size: 150px; }
 .semantic-space-list__items { max-height: 390px; overflow: auto; border: 1px solid #31433e; border-radius: 9px; }
