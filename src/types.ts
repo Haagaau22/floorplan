@@ -111,3 +111,101 @@ export interface LocalViewBox {
   width: number
   height: number
 }
+
+export interface SemanticPath {
+  points: Point[]
+  closed: boolean
+  role?: 'outline' | 'detail' | 'fill'
+}
+
+export interface SemanticTemplate {
+  id: string
+  name: string
+  category: 'furniture' | 'fixture' | 'equipment' | 'circulation'
+  size: { width: number; depth: number }
+  anchor: Point
+  geometry: {
+    paths: SemanticPath[]
+    circles?: Array<{ center: Point; radius: number; role?: 'outline' | 'detail' | 'fill' }>
+  }
+  source?: {
+    kind: 'project' | 'catalog' | 'generated'
+    name?: string
+    url?: string
+    license?: string
+  }
+}
+
+export interface SemanticWall {
+  id: string
+  kind: 'exterior' | 'interior' | 'partition'
+  centerline: Point[]
+  thickness: number
+  height?: number
+}
+
+export interface SemanticOpening {
+  id: string
+  kind: 'door' | 'window' | 'passage'
+  wallId: string
+  segmentIndex: number
+  offset: number
+  width: number
+  swing?: 'none' | 'left-in' | 'right-in' | 'left-out' | 'right-out'
+}
+
+export interface SemanticSpace {
+  id: string
+  kind: 'apartment' | 'room' | 'corridor' | 'utility' | 'electrical' | 'plumbing' | 'stair' | 'elevator' | 'common' | 'outdoor' | 'excluded' | 'void'
+  name: string
+  number?: string
+  boundary: Point[]
+  labelPosition: Point
+  labelStyle?: 'room-tag' | 'area-name' | 'hidden'
+  boundaryStatus?: 'estimated' | 'verified'
+}
+
+export interface SemanticInstance {
+  id: string
+  templateId: string
+  position: Point
+  rotation?: number
+  scale?: Point
+  spaceId?: string
+}
+
+export interface SemanticLevel {
+  id: string
+  name: string
+  elevation?: number
+  walls: SemanticWall[]
+  openings: SemanticOpening[]
+  spaces: SemanticSpace[]
+  instances: SemanticInstance[]
+  details?: SemanticPath[]
+}
+
+export interface SemanticFloorplanData {
+  schemaVersion: '2.0.0'
+  project: {
+    id: string
+    name: string
+    status: 'draft' | 'review' | 'verified'
+    source?: string
+    notes?: string
+  }
+  coordinateSystem: {
+    units: 'mm'
+    xAxis: 'right'
+    yAxis: 'down'
+  }
+  canvas: { width: number; height: number }
+  templates: SemanticTemplate[]
+  levels: SemanticLevel[]
+}
+
+export type AnyFloorplanData = FloorplanData | SemanticFloorplanData
+
+export function isSemanticFloorplan(data: AnyFloorplanData): data is SemanticFloorplanData {
+  return data.schemaVersion === '2.0.0'
+}

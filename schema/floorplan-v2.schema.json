@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floorplan.221231.xyz/schema/floorplan-v2.schema.json",
+  "title": "Semantic Floorplan Project",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "project", "coordinateSystem", "canvas", "templates", "levels"],
+  "properties": {
+    "schemaVersion": { "const": "2.0.0" },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "status"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["draft", "review", "verified"] },
+        "source": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "coordinateSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["units", "xAxis", "yAxis"],
+      "properties": {
+        "units": { "const": "mm" },
+        "xAxis": { "const": "right" },
+        "yAxis": { "const": "down" }
+      }
+    },
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "$ref": "#/$defs/positiveInteger" },
+        "height": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "templates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/template" }
+    },
+    "levels": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/level" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "positiveInteger": { "type": "integer", "exclusiveMinimum": 0 },
+    "point": {
+      "type": "array",
+      "prefixItems": [{ "type": "integer" }, { "type": "integer" }],
+      "items": false
+    },
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["points", "closed"],
+      "properties": {
+        "points": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/point" } },
+        "closed": { "type": "boolean" },
+        "role": { "enum": ["outline", "detail", "fill"] }
+      }
+    },
+    "circle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["center", "radius"],
+      "properties": {
+        "center": { "$ref": "#/$defs/point" },
+        "radius": { "$ref": "#/$defs/positiveInteger" },
+        "role": { "enum": ["outline", "detail", "fill"] }
+      }
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "category", "size", "anchor", "geometry"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "category": { "enum": ["furniture", "fixture", "equipment", "circulation"] },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "depth"],
+          "properties": {
+            "width": { "$ref": "#/$defs/positiveInteger" },
+            "depth": { "$ref": "#/$defs/positiveInteger" }
+          }
+        },
+        "anchor": { "$ref": "#/$defs/point" },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["paths"],
+          "properties": {
+            "paths": { "type": "array", "items": { "$ref": "#/$defs/path" } },
+            "circles": { "type": "array", "items": { "$ref": "#/$defs/circle" } }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "enum": ["project", "catalog", "generated"] },
+            "name": { "type": "string" },
+            "url": { "type": "string", "format": "uri" },
+            "license": { "type": "string" }
+          }
+        }
+      }
+    },
+    "wall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "centerline", "thickness"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["exterior", "interior", "partition"] },
+        "centerline": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/point" } },
+        "thickness": { "$ref": "#/$defs/positiveInteger" },
+        "height": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "opening": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "wallId", "segmentIndex", "offset", "width"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["door", "window", "passage"] },
+        "wallId": { "$ref": "#/$defs/id" },
+        "segmentIndex": { "type": "integer", "minimum": 0 },
+        "offset": { "type": "integer", "minimum": 0 },
+        "width": { "$ref": "#/$defs/positiveInteger" },
+        "swing": { "enum": ["none", "left-in", "right-in", "left-out", "right-out"] }
+      }
+    },
+    "space": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "boundary", "labelPosition"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": ["apartment", "room", "corridor", "utility", "electrical", "plumbing", "stair", "elevator", "common", "outdoor", "excluded", "void"]
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "number": { "type": "string" },
+        "boundary": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/point" } },
+        "labelPosition": { "$ref": "#/$defs/point" },
+        "labelStyle": { "enum": ["room-tag", "area-name", "hidden"] },
+        "boundaryStatus": { "enum": ["estimated", "verified"] }
+      }
+    },
+    "instance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "templateId", "position"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "templateId": { "$ref": "#/$defs/id" },
+        "position": { "$ref": "#/$defs/point" },
+        "rotation": { "type": "number" },
+        "scale": {
+          "type": "array",
+          "prefixItems": [{ "type": "number", "not": { "const": 0 } }, { "type": "number", "not": { "const": 0 } }],
+          "items": false
+        },
+        "spaceId": { "$ref": "#/$defs/id" }
+      }
+    },
+    "level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "walls", "openings", "spaces", "instances"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "elevation": { "type": "integer" },
+        "walls": { "type": "array", "items": { "$ref": "#/$defs/wall" } },
+        "openings": { "type": "array", "items": { "$ref": "#/$defs/opening" } },
+        "spaces": { "type": "array", "items": { "$ref": "#/$defs/space" } },
+        "instances": { "type": "array", "items": { "$ref": "#/$defs/instance" } },
+        "details": { "type": "array", "items": { "$ref": "#/$defs/path" } }
+      }
+    }
+  }
+}

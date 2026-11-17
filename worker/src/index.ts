@@ -1,5 +1,6 @@
 import Ajv2020 from 'ajv/dist/2020'
 import floorplanSchema from '../../schema/floorplan.schema.json'
+import semanticFloorplanSchema from '../../schema/floorplan-v2.schema.json'
 
 interface Env {
   FLOORPLANS: R2Bucket
@@ -7,7 +8,7 @@ interface Env {
   ALLOWED_CLOCK_SKEW_SECONDS?: string
 }
 
-interface FloorplanPayload {
+interface FloorplanPayloadV1 {
   schemaVersion: string
   project: { id: string }
   viewport: { minX: number; minY: number; maxX: number; maxY: number }
@@ -29,6 +30,22 @@ interface FloorplanPayload {
   }
 }
 
+interface FloorplanPayloadV2 {
+  schemaVersion: '2.0.0'
+  project: { id: string }
+  canvas: { width: number; height: number }
+  templates: Array<{ id: string }>
+  levels: Array<{
+    id: string
+    walls: Array<{ id: string; centerline: Array<[number, number]> }>
+    openings: Array<{ id: string; wallId: string; segmentIndex: number; offset: number; width: number }>
+    spaces: Array<{ id: string }>
+    instances: Array<{ id: string; templateId: string; spaceId?: string }>
+  }>
+}
+
+type FloorplanPayload = FloorplanPayloadV1 | FloorplanPayloadV2
+
 interface ValidationIssue {
   instancePath: string
   message: string
@@ -36,7 +53,8 @@ interface ValidationIssue {
 
 const encoder = new TextEncoder()
 const ajv = new Ajv2020({ allErrors: true, strict: false })
-const validateSchema = ajv.compile(floorplanSchema)
+const validateV1Schema = ajv.compile(floorplanSchema)
+const validateV2Schema = ajv.compile(semanticFloorplanSchema)
 const projectRoute = /^\/api\/projects\/([a-z0-9][a-z0-9-]*)$/
 const MAX_BODY_BYTES = 15 * 1024 * 1024
 
@@ -112,7 +130,7 @@ function duplicateValues(values: string[]): string[] {
   return [...duplicates]
 }
 
-function validatePayloadInvariants(value: FloorplanPayload): ValidationIssue[] {
+function validateV1PayloadInvariants(value: FloorplanPayloadV1): ValidationIssue[] {
   const errors: ValidationIssue[] = []
   const add = (instancePath: string, message: string) => errors.push({ instancePath, message })
   const viewport = value.viewport
@@ -158,15 +176,67 @@ function validatePayloadInvariants(value: FloorplanPayload): ValidationIssue[] {
   return errors
 }
 
-export function validateFloorplanPayload(payload: unknown, projectId: string): { valid: true; value: FloorplanPayload } | { valid: false; errors: unknown } {
-  if (!validateSchema(payload)) {
-    return { valid: false, errors: validateSchema.errors }
+function validateV2PayloadInvariants(value: FloorplanPayloadV2): ValidationIssue[] {
+  const errors: ValidationIssue[] = []
+  const add = (instancePath: string, message: string) => errors.push({ instancePath, message })
+  const duplicateTemplateIds = duplicateValues(value.templates.map((template) => template.id))
+  if (duplicateTemplateIds.length) add('/templates', `contains duplicate ids: ${duplicateTemplateIds.join(', ')}`)
+  const templateIds = new Set(value.templates.map((template) => template.id))
+  const duplicateLevelIds = duplicateValues(value.levels.map((level) => level.id))
+  if (duplicateLevelIds.length) add('/levels', `contains duplicate ids: ${duplicateLevelIds.join(', ')}`)
+
+  for (const [levelIndex, level] of value.levels.entries()) {
+    const prefix = `/levels/${levelIndex}`
+    const allObjectIds = [
+      ...level.walls.map((wall) => wall.id),
+      ...level.openings.map((opening) => opening.id),
+      ...level.spaces.map((space) => space.id),
+      ...level.instances.map((instance) => instance.id),
+    ]
+    const duplicateObjectIds = duplicateValues(allObjectIds)
+    if (duplicateObjectIds.length) add(prefix, `contains duplicate object ids: ${duplicateObjectIds.join(', ')}`)
+    const walls = new Map(level.walls.map((wall) => [wall.id, wall]))
+    const spaceIds = new Set(level.spaces.map((space) => space.id))
+
+    for (const [openingIndex, opening] of level.openings.entries()) {
+      const wall = walls.get(opening.wallId)
+      const openingPath = `${prefix}/openings/${openingIndex}`
+      if (!wall) {
+        add(`${openingPath}/wallId`, `references unknown wall: ${opening.wallId}`)
+        continue
+      }
+      if (opening.segmentIndex >= wall.centerline.length - 1) {
+        add(`${openingPath}/segmentIndex`, 'must identify an existing wall segment')
+        continue
+      }
+      const start = wall.centerline[opening.segmentIndex]
+      const end = wall.centerline[opening.segmentIndex + 1]
+      const segmentLength = Math.hypot(end[0] - start[0], end[1] - start[1])
+      if (opening.offset + opening.width > segmentLength + 0.01) {
+        add(openingPath, 'extends beyond its wall segment')
+      }
+    }
+
+    for (const [instanceIndex, instance] of level.instances.entries()) {
+      const instancePath = `${prefix}/instances/${instanceIndex}`
+      if (!templateIds.has(instance.templateId)) add(`${instancePath}/templateId`, `references unknown template: ${instance.templateId}`)
+      if (instance.spaceId && !spaceIds.has(instance.spaceId)) add(`${instancePath}/spaceId`, `references unknown space: ${instance.spaceId}`)
+    }
   }
+  return errors
+}
+
+export function validateFloorplanPayload(payload: unknown, projectId: string): { valid: true; value: FloorplanPayload } | { valid: false; errors: unknown } {
+  const schemaVersion = (payload as { schemaVersion?: unknown } | null)?.schemaVersion
+  const validateSchema = schemaVersion === '2.0.0' ? validateV2Schema : validateV1Schema
+  if (!validateSchema(payload)) return { valid: false, errors: validateSchema.errors }
   const value = payload as unknown as FloorplanPayload
   if (value.project.id !== projectId) {
     return { valid: false, errors: [{ instancePath: '/project/id', message: 'must match URL project id' }] }
   }
-  const invariantErrors = validatePayloadInvariants(value)
+  const invariantErrors = schemaVersion === '2.0.0'
+    ? validateV2PayloadInvariants(value as FloorplanPayloadV2)
+    : validateV1PayloadInvariants(value as FloorplanPayloadV1)
   if (invariantErrors.length) return { valid: false, errors: invariantErrors }
   return { valid: true, value }
 }

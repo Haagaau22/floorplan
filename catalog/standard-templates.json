@@ -1,0 +1,1387 @@
+{
+  "catalogVersion": "1.0.0",
+  "units": "mm",
+  "license": "CC0-1.0",
+  "templates": [
+    {
+      "id": "cc0-sofa",
+      "name": "Sofa",
+      "category": "furniture",
+      "size": {
+        "width": 2134,
+        "depth": 914
+      },
+      "anchor": [
+        1067,
+        457
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                2115,
+                19
+              ],
+              [
+                2115,
+                895
+              ],
+              [
+                19,
+                895
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                2115,
+                19
+              ],
+              [
+                2115,
+                178
+              ],
+              [
+                19,
+                178
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                19,
+                178
+              ],
+              [
+                178,
+                178
+              ],
+              [
+                178,
+                895
+              ],
+              [
+                19,
+                895
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                1956,
+                178
+              ],
+              [
+                2115,
+                178
+              ],
+              [
+                2115,
+                895
+              ],
+              [
+                1956,
+                895
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                770,
+                178
+              ],
+              [
+                770,
+                895
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                1363,
+                178
+              ],
+              [
+                1363,
+                895
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/sofa.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-dining-table",
+      "name": "Dining Table 6'",
+      "category": "furniture",
+      "size": {
+        "width": 1829,
+        "depth": 914
+      },
+      "anchor": [
+        914,
+        457
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                1810,
+                19
+              ],
+              [
+                1810,
+                895
+              ],
+              [
+                19,
+                895
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                76,
+                76
+              ],
+              [
+                1753,
+                76
+              ],
+              [
+                1753,
+                838
+              ],
+              [
+                76,
+                838
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/dining_table.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-dining-chair",
+      "name": "Dining Chair",
+      "category": "furniture",
+      "size": {
+        "width": 457,
+        "depth": 457
+      },
+      "anchor": [
+        228,
+        228
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                25,
+                19
+              ],
+              [
+                432,
+                19
+              ],
+              [
+                432,
+                90
+              ],
+              [
+                25,
+                90
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                36,
+                97
+              ],
+              [
+                422,
+                97
+              ],
+              [
+                422,
+                437
+              ],
+              [
+                36,
+                437
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/dining_chair.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-kitchen-sink",
+      "name": "Kitchen Sink",
+      "category": "fixture",
+      "size": {
+        "width": 838,
+        "depth": 559
+      },
+      "anchor": [
+        419,
+        279
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                819,
+                19
+              ],
+              [
+                819,
+                540
+              ],
+              [
+                19,
+                540
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                76,
+                102
+              ],
+              [
+                381,
+                102
+              ],
+              [
+                381,
+                457
+              ],
+              [
+                76,
+                457
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                457,
+                102
+              ],
+              [
+                762,
+                102
+              ],
+              [
+                762,
+                457
+              ],
+              [
+                457,
+                457
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          }
+        ],
+        "circles": [
+          {
+            "center": [
+              419,
+              56
+            ],
+            "radius": 25,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/kitchen_sink.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-bed-queen",
+      "name": "Queen Bed",
+      "category": "furniture",
+      "size": {
+        "width": 1524,
+        "depth": 2032
+      },
+      "anchor": [
+        762,
+        1016
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                1505,
+                19
+              ],
+              [
+                1505,
+                2013
+              ],
+              [
+                19,
+                2013
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                114,
+                76
+              ],
+              [
+                711,
+                76
+              ],
+              [
+                711,
+                330
+              ],
+              [
+                114,
+                330
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                813,
+                76
+              ],
+              [
+                1410,
+                76
+              ],
+              [
+                1410,
+                330
+              ],
+              [
+                813,
+                330
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                19,
+                483
+              ],
+              [
+                1505,
+                483
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/bed_queen.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-shower",
+      "name": "Shower 36\"",
+      "category": "fixture",
+      "size": {
+        "width": 914,
+        "depth": 914
+      },
+      "anchor": [
+        457,
+        457
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                895,
+                19
+              ],
+              [
+                895,
+                895
+              ],
+              [
+                19,
+                895
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                76,
+                76
+              ],
+              [
+                838,
+                76
+              ],
+              [
+                838,
+                838
+              ],
+              [
+                76,
+                838
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                76,
+                76
+              ],
+              [
+                838,
+                838
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                838,
+                76
+              ],
+              [
+                76,
+                838
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                102,
+                879
+              ],
+              [
+                787,
+                879
+              ],
+              [
+                787,
+                945
+              ],
+              [
+                102,
+                945
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          }
+        ],
+        "circles": [
+          {
+            "center": [
+              457,
+              457
+            ],
+            "radius": 46,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/shower.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-toilet",
+      "name": "Toilet",
+      "category": "fixture",
+      "size": {
+        "width": 508,
+        "depth": 711
+      },
+      "anchor": [
+        254,
+        355
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                51,
+                19
+              ],
+              [
+                457,
+                19
+              ],
+              [
+                457,
+                197
+              ],
+              [
+                51,
+                197
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                444,
+                444
+              ],
+              [
+                441,
+                492
+              ],
+              [
+                430,
+                537
+              ],
+              [
+                412,
+                579
+              ],
+              [
+                389,
+                615
+              ],
+              [
+                360,
+                645
+              ],
+              [
+                327,
+                667
+              ],
+              [
+                291,
+                681
+              ],
+              [
+                254,
+                686
+              ],
+              [
+                217,
+                681
+              ],
+              [
+                181,
+                667
+              ],
+              [
+                148,
+                645
+              ],
+              [
+                119,
+                615
+              ],
+              [
+                96,
+                579
+              ],
+              [
+                78,
+                537
+              ],
+              [
+                67,
+                492
+              ],
+              [
+                64,
+                444
+              ],
+              [
+                67,
+                397
+              ],
+              [
+                78,
+                352
+              ],
+              [
+                96,
+                310
+              ],
+              [
+                119,
+                274
+              ],
+              [
+                148,
+                244
+              ],
+              [
+                181,
+                222
+              ],
+              [
+                217,
+                208
+              ],
+              [
+                254,
+                203
+              ],
+              [
+                291,
+                208
+              ],
+              [
+                327,
+                222
+              ],
+              [
+                360,
+                244
+              ],
+              [
+                389,
+                274
+              ],
+              [
+                412,
+                310
+              ],
+              [
+                430,
+                352
+              ],
+              [
+                441,
+                397
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                394,
+                457
+              ],
+              [
+                391,
+                492
+              ],
+              [
+                383,
+                525
+              ],
+              [
+                370,
+                556
+              ],
+              [
+                353,
+                583
+              ],
+              [
+                332,
+                605
+              ],
+              [
+                307,
+                621
+              ],
+              [
+                281,
+                632
+              ],
+              [
+                254,
+                635
+              ],
+              [
+                227,
+                632
+              ],
+              [
+                201,
+                621
+              ],
+              [
+                176,
+                605
+              ],
+              [
+                155,
+                583
+              ],
+              [
+                138,
+                556
+              ],
+              [
+                125,
+                525
+              ],
+              [
+                117,
+                492
+              ],
+              [
+                114,
+                457
+              ],
+              [
+                117,
+                423
+              ],
+              [
+                125,
+                389
+              ],
+              [
+                138,
+                358
+              ],
+              [
+                155,
+                331
+              ],
+              [
+                176,
+                309
+              ],
+              [
+                201,
+                293
+              ],
+              [
+                227,
+                283
+              ],
+              [
+                254,
+                279
+              ],
+              [
+                281,
+                283
+              ],
+              [
+                307,
+                293
+              ],
+              [
+                332,
+                309
+              ],
+              [
+                353,
+                331
+              ],
+              [
+                370,
+                358
+              ],
+              [
+                383,
+                389
+              ],
+              [
+                391,
+                423
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/toilet.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-electric-panel",
+      "name": "Electric Panel",
+      "category": "equipment",
+      "size": {
+        "width": 406,
+        "depth": 102
+      },
+      "anchor": [
+        203,
+        51
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                13,
+                13
+              ],
+              [
+                394,
+                13
+              ],
+              [
+                394,
+                89
+              ],
+              [
+                13,
+                89
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                203,
+                13
+              ],
+              [
+                203,
+                89
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                76,
+                33
+              ],
+              [
+                178,
+                33
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                76,
+                69
+              ],
+              [
+                178,
+                69
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                229,
+                33
+              ],
+              [
+                330,
+                33
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                229,
+                69
+              ],
+              [
+                330,
+                69
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/electric_panel.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-stairs",
+      "name": "Stairs (flight)",
+      "category": "circulation",
+      "size": {
+        "width": 914,
+        "depth": 3048
+      },
+      "anchor": [
+        457,
+        1524
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                895,
+                19
+              ],
+              [
+                895,
+                3029
+              ],
+              [
+                19,
+                3029
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                19,
+                152
+              ],
+              [
+                895,
+                152
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                427
+              ],
+              [
+                895,
+                427
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                701
+              ],
+              [
+                895,
+                701
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                975
+              ],
+              [
+                895,
+                975
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                1250
+              ],
+              [
+                895,
+                1250
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                1524
+              ],
+              [
+                895,
+                1524
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                1798
+              ],
+              [
+                895,
+                1798
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                2073
+              ],
+              [
+                895,
+                2073
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                2347
+              ],
+              [
+                895,
+                2347
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                19,
+                2621
+              ],
+              [
+                895,
+                2621
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                457,
+                2642
+              ],
+              [
+                457,
+                660
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                305,
+                914
+              ],
+              [
+                457,
+                610
+              ],
+              [
+                610,
+                914
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/stairs.svg",
+        "license": "CC0-1.0"
+      }
+    },
+    {
+      "id": "cc0-elevator",
+      "name": "Residential Elevator",
+      "category": "circulation",
+      "size": {
+        "width": 1219,
+        "depth": 1524
+      },
+      "anchor": [
+        609,
+        762
+      ],
+      "geometry": {
+        "paths": [
+          {
+            "points": [
+              [
+                19,
+                19
+              ],
+              [
+                1200,
+                19
+              ],
+              [
+                1200,
+                1505
+              ],
+              [
+                19,
+                1505
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                102,
+                102
+              ],
+              [
+                1118,
+                102
+              ],
+              [
+                1118,
+                1321
+              ],
+              [
+                102,
+                1321
+              ]
+            ],
+            "closed": true,
+            "role": "outline"
+          },
+          {
+            "points": [
+              [
+                102,
+                102
+              ],
+              [
+                1118,
+                1321
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                1118,
+                102
+              ],
+              [
+                102,
+                1321
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                152,
+                1435
+              ],
+              [
+                559,
+                1435
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          },
+          {
+            "points": [
+              [
+                660,
+                1435
+              ],
+              [
+                1067,
+                1435
+              ]
+            ],
+            "closed": false,
+            "role": "detail"
+          }
+        ],
+        "circles": [
+          {
+            "center": [
+              1016,
+              762
+            ],
+            "radius": 33,
+            "role": "detail"
+          }
+        ]
+      },
+      "source": {
+        "kind": "catalog",
+        "name": "pjm4github/FloorPlanner furnishings",
+        "url": "https://github.com/pjm4github/FloorPlanner/blob/main/assets/furnishings/elevator.svg",
+        "license": "CC0-1.0"
+      }
+    }
+  ]
+}

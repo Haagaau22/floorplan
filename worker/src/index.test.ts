@@ -91,4 +91,37 @@ describe('Worker project validation', () => {
     payload.statistics.vertexCount = 99
     expect(validateFloorplanPayload(payload, 'apartment')).toMatchObject({ valid: false })
   })
+
+  it('accepts a self-contained semantic v2 project', () => {
+    const payload = {
+      schemaVersion: '2.0.0',
+      project: { id: 'apartment', name: 'Semantic', status: 'verified' },
+      coordinateSystem: { units: 'mm', xAxis: 'right', yAxis: 'down' },
+      canvas: { width: 5000, height: 4000 },
+      templates: [{
+        id: 'bed', name: 'Bed', category: 'furniture', size: { width: 1800, depth: 2000 }, anchor: [900, 1000],
+        geometry: { paths: [{ points: [[0, 0], [1800, 0], [1800, 2000], [0, 2000]], closed: true }] },
+      }],
+      levels: [{
+        id: 'level-01', name: 'Level 1',
+        walls: [{ id: 'wall-1', kind: 'interior', centerline: [[0, 0], [5000, 0]], thickness: 120 }],
+        openings: [{ id: 'door-1', kind: 'door', wallId: 'wall-1', segmentIndex: 0, offset: 1000, width: 900 }],
+        spaces: [{ id: 'room-1', kind: 'room', name: 'Room', boundary: [[0, 0], [5000, 0], [5000, 4000]], labelPosition: [2500, 2000] }],
+        instances: [{ id: 'bed-1', templateId: 'bed', position: [2500, 2000], spaceId: 'room-1' }],
+      }],
+    }
+    expect(validateFloorplanPayload(payload, 'apartment').valid).toBe(true)
+  })
+
+  it('rejects semantic v2 references to unknown templates', () => {
+    const payload = {
+      schemaVersion: '2.0.0',
+      project: { id: 'apartment', name: 'Semantic', status: 'draft' },
+      coordinateSystem: { units: 'mm', xAxis: 'right', yAxis: 'down' },
+      canvas: { width: 100, height: 100 },
+      templates: [],
+      levels: [{ id: 'level-01', name: 'Level', walls: [], openings: [], spaces: [], instances: [{ id: 'item-1', templateId: 'missing', position: [0, 0] }] }],
+    }
+    expect(validateFloorplanPayload(payload, 'apartment')).toMatchObject({ valid: false })
+  })
 })

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 import FloorPlanViewer from './components/FloorPlanViewer.vue'
+import SemanticFloorPlanViewer from './components/SemanticFloorPlanViewer.vue'
 import { fetchFloorplan } from './api'
+import { isSemanticFloorplan } from './types'
 
 const query = useQuery({
   queryKey: ['floorplan', 'apartment'],
@@ -15,7 +17,7 @@ const query = useQuery({
       <div class="load-state__mark">FP</div>
       <div>
         <p class="eyebrow">正在读取项目 JSON</p>
-        <h1>复原 CAD 图纸…</h1>
+        <h1>生成语义户型图…</h1>
       </div>
     </div>
 
@@ -29,6 +31,7 @@ const query = useQuery({
       </div>
     </div>
 
+    <SemanticFloorPlanViewer v-else-if="query.data.value && isSemanticFloorplan(query.data.value)" :data="query.data.value" />
     <FloorPlanViewer v-else-if="query.data.value" :data="query.data.value" />
   </main>
 </template>

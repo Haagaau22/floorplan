@@ -13,7 +13,11 @@
     "worker:dev": "wrangler dev --config worker/wrangler.jsonc",
     "worker:deploy": "wrangler deploy --config worker/wrangler.jsonc",
     "generate:data": "uv run python scripts/export_floorplan.py data/generated/apartment.dxf data/projects/apartment/floorplan.json --baseline data/apartment-tiles-baseline.json",
-    "validate:data": "uv run python scripts/validate_floorplan.py data/projects/apartment/floorplan.json"
+    "validate:data": "uv run python scripts/validate_floorplan.py data/projects/apartment/floorplan.json",
+    "generate:v2": "uv run python scripts/migrate_cad_to_v2.py data/generated/apartment.dxf data/projects/apartment/floorplan-v2.json",
+    "validate:v2": "uv run python scripts/validate_floorplan_v2.py data/projects/apartment/floorplan-v2.json",
+    "catalog:build": "uv run python scripts/import_cc0_templates.py",
+    "export:v2": "uv run python scripts/export_floorplan_v2_dxf.py data/projects/apartment/floorplan-v2.json output/dxf/apartment-floorplan.dxf && uv run python scripts/export_floorplan_v2_pdf.py data/projects/apartment/floorplan-v2.json output/pdf/apartment-floorplan.pdf"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.107.1",

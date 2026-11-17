@@ -322,6 +322,38 @@ button { color: inherit; }
 .tile-spec .tile-spec__wide { grid-column: 1 / -1; }
 .verification-note { position: relative; margin: 13px 0 0; color: #889590; font-size: 9px; line-height: 1.55; }
 
+.semantic-svg .semantic-details {
+  fill: none;
+  stroke: #687370;
+  stroke-width: .54;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.semantic-wall { fill: none; stroke: #182522; stroke-linecap: square; stroke-linejoin: miter; }
+.semantic-opening-cut { stroke: #faf9f3; stroke-linecap: butt; }
+.semantic-window { stroke: #4d7775; stroke-width: 2.3; vector-effect: non-scaling-stroke; }
+.semantic-door { fill: none; stroke: #52615d; stroke-width: 1.1; vector-effect: non-scaling-stroke; }
+.semantic-instances { fill: none; stroke: #596662; stroke-width: .52; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; }
+.semantic-instances .template-detail { stroke-width: .42; }
+.semantic-instances .template-fill { fill: #d8dfdc; }
+.semantic-excluded { fill: url(#semantic-excluded-hatch); stroke: #978f82; stroke-width: 1.1; vector-effect: non-scaling-stroke; }
+.excluded-hatch-line { stroke: #aaa296; stroke-width: 22; }
+.semantic-room-tag, .semantic-area-tag { pointer-events: none; }
+.semantic-room-tag rect { fill: #17463f; stroke: #fffaf2; stroke-width: 24; }
+.semantic-room-tag text, .semantic-area-tag text { text-anchor: middle; dominant-baseline: central; font-family: Inter, "PingFang SC", sans-serif; font-weight: 760; }
+.semantic-room-tag text { fill: white; font-size: 250px; }
+.semantic-area-tag rect { fill: #f1ede3; stroke: #7d7569; stroke-width: 20; }
+.semantic-area-tag text { fill: #514a41; font-size: 150px; }
+.semantic-space-list__items { max-height: 390px; overflow: auto; border: 1px solid #31433e; border-radius: 9px; }
+.semantic-space-list__items button { display: grid; width: 100%; grid-template-columns: 38px 1fr auto; align-items: center; gap: 8px; border: 0; border-bottom: 1px solid #2c3e39; padding: 8px 10px; background: transparent; color: #b6bfbc; text-align: left; cursor: pointer; }
+.semantic-space-list__items button:last-child { border-bottom: 0; }
+.semantic-space-list__items button:hover, .semantic-space-list__items button.selected { background: #2a3e38; }
+.semantic-space-list__items strong { color: white; font-family: ui-monospace, monospace; font-size: 11px; }
+.semantic-space-list__items span { font-size: 10px; }
+.semantic-space-list__items small { color: #72827c; font-size: 8px; }
+.semantic-panel__note { margin: 14px 5px 0; color: #83918c; font-size: 9px; line-height: 1.55; }
+
 .room-list { padding: 22px 18px 30px; }
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 6px; }
 .section-heading h2 { margin: 3px 0 0; font-size: 17px; }

@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite'
 
-const localDataPath = resolve(process.cwd(), 'data/projects/apartment/floorplan.json')
+const localDataPath = resolve(process.cwd(), 'data/projects/apartment/floorplan-v2.json')
 
 function localFloorplanApi(): Plugin {
   const install = (server: ViteDevServer | PreviewServer) => {

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "2.0.0",
+  "project": {
+    "id": "semantic-demo",
+    "name": "语义户型最小闭环",
+    "status": "verified",
+    "source": "hand-authored JSON",
+    "notes": "用于验证墙厚、开口、模板复用、排除区域及 DXF/PDF 导出。"
+  },
+  "coordinateSystem": { "units": "mm", "xAxis": "right", "yAxis": "down" },
+  "canvas": { "width": 12000, "height": 8000 },
+  "templates": [
+    {
+      "id": "bed-double",
+      "name": "双人床",
+      "category": "furniture",
+      "size": { "width": 1800, "depth": 2000 },
+      "anchor": [900, 1000],
+      "geometry": {
+        "paths": [
+          { "points": [[0, 0], [1800, 0], [1800, 2000], [0, 2000]], "closed": true, "role": "outline" },
+          { "points": [[0, 430], [1800, 430]], "closed": false, "role": "detail" },
+          { "points": [[80, 80], [850, 80], [850, 400], [80, 400]], "closed": true, "role": "detail" },
+          { "points": [[950, 80], [1720, 80], [1720, 400], [950, 400]], "closed": true, "role": "detail" }
+        ]
+      },
+      "source": { "kind": "generated", "name": "Floorplan semantic demo" }
+    }
+  ],
+  "levels": [
+    {
+      "id": "level-01",
+      "name": "一层",
+      "elevation": 0,
+      "walls": [
+        { "id": "wall-top", "kind": "exterior", "centerline": [[1000, 1000], [9000, 1000]], "thickness": 240, "height": 2800 },
+        { "id": "wall-right", "kind": "exterior", "centerline": [[9000, 1000], [9000, 7000]], "thickness": 240, "height": 2800 },
+        { "id": "wall-bottom", "kind": "exterior", "centerline": [[9000, 7000], [1000, 7000]], "thickness": 240, "height": 2800 },
+        { "id": "wall-left", "kind": "exterior", "centerline": [[1000, 7000], [1000, 1000]], "thickness": 240, "height": 2800 },
+        { "id": "wall-middle", "kind": "interior", "centerline": [[5200, 1000], [5200, 7000]], "thickness": 120, "height": 2800 }
+      ],
+      "openings": [
+        { "id": "door-entry", "kind": "door", "wallId": "wall-bottom", "segmentIndex": 0, "offset": 900, "width": 900, "swing": "left-in" },
+        { "id": "door-room", "kind": "door", "wallId": "wall-middle", "segmentIndex": 0, "offset": 2500, "width": 850, "swing": "right-in" },
+        { "id": "window-bedroom", "kind": "window", "wallId": "wall-top", "segmentIndex": 0, "offset": 900, "width": 1800, "swing": "none" }
+      ],
+      "spaces": [
+        { "id": "space-bedroom", "kind": "room", "name": "卧室", "boundary": [[1120, 1120], [5140, 1120], [5140, 6880], [1120, 6880]], "labelPosition": [3100, 4000], "labelStyle": "room-tag", "boundaryStatus": "verified" },
+        { "id": "space-living", "kind": "room", "name": "客厅", "boundary": [[5260, 1120], [8880, 1120], [8880, 6880], [5260, 6880]], "labelPosition": [7050, 4000], "labelStyle": "room-tag", "boundaryStatus": "verified" },
+        { "id": "space-excluded", "kind": "excluded", "name": "非项目区域", "boundary": [[9400, 1000], [11700, 1000], [11700, 7000], [9400, 7000]], "labelPosition": [10550, 4000], "labelStyle": "area-name", "boundaryStatus": "verified" }
+      ],
+      "instances": [
+        { "id": "bed-bedroom", "templateId": "bed-double", "position": [3000, 2500], "rotation": 0, "scale": [1, 1], "spaceId": "space-bedroom" },
+        { "id": "bed-living-demo", "templateId": "bed-double", "position": [7000, 2500], "rotation": 90, "scale": [0.65, 0.65], "spaceId": "space-living" }
+      ]
+    }
+  ]
+}

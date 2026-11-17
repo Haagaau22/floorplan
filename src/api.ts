@@ -1,6 +1,6 @@
-import type { FloorplanData } from './types'
+import type { AnyFloorplanData } from './types'
 
-export async function fetchFloorplan(projectId = 'apartment'): Promise<FloorplanData> {
+export async function fetchFloorplan(projectId = 'apartment'): Promise<AnyFloorplanData> {
   const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}`, {
     headers: { Accept: 'application/json' },
   })
@@ -8,5 +8,5 @@ export async function fetchFloorplan(projectId = 'apartment'): Promise<Floorplan
     const detail = await response.text()
     throw new Error(`户型数据加载失败（${response.status}）：${detail}`)
   }
-  return response.json() as Promise<FloorplanData>
+  return response.json() as Promise<AnyFloorplanData>
 }
