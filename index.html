@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="32套公寓瓷砖面积与采购数量估算工具">
+  <title>公寓瓷砖用量表</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__inner">
+      <div>
+        <div class="eyebrow">装修材料 · 在线估算表</div>
+        <h1>32套公寓瓷砖用量</h1>
+        <p class="hero__copy">按房号核算地面与墙面面积，修改蓝色输入框后，采购数量会自动更新。</p>
+      </div>
+      <div class="hero__actions no-print">
+        <button class="button button--primary" id="shareButton">复制当前版本链接</button>
+        <button class="button" id="printButton">打印 / 保存 PDF</button>
+        <button class="button" id="csvButton">导出 CSV</button>
+        <button class="button button--quiet" id="resetButton">恢复初始估算</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="notice" aria-label="估算说明">
+      <strong>使用提醒</strong>
+      <span>本表依据《公寓.dwg》量取，部分损坏尺寸采用估算值。当前判断封闭厨房为9、10、28号；墙砖暂不扣门窗及橱柜遮挡。</span>
+    </section>
+
+    <section class="metrics" aria-label="关键指标">
+      <article class="metric">
+        <span class="metric__label">房间＋走廊地面</span>
+        <strong id="metricFloor">—</strong>
+        <small>㎡，可贴砖净面积</small>
+      </article>
+      <article class="metric">
+        <span class="metric__label">厨房＋卫生间墙面</span>
+        <strong id="metricWall">—</strong>
+        <small>㎡，按设置高度估算</small>
+      </article>
+      <article class="metric">
+        <span class="metric__label">建议采购总片数</span>
+        <strong id="metricPieces">—</strong>
+        <small>片，四种规格合计</small>
+      </article>
+      <article class="metric metric--accent">
+        <span class="metric__label">与约定总范围差额</span>
+        <strong id="metricGap">—</strong>
+        <small>㎡，墙体/楼梯/结构等</small>
+      </article>
+    </section>
+
+    <section class="panel settings no-print">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow eyebrow--dark">全局参数</div>
+          <h2>修改后即时重算</h2>
+        </div>
+        <span class="save-state" id="saveState">已保存到本机</span>
+      </div>
+      <div class="settings__grid">
+        <label>墙砖高度（m）<input id="wallHeight" type="number" min="0" step="0.1"></label>
+        <label>采购损耗率（%）<input id="wasteRate" type="number" min="0" max="50" step="1"></label>
+        <label>范围复核面积（㎡）<input id="grossScope" type="number" min="0" step="1"></label>
+        <label>走廊长度（m）<input id="corridorLength" type="number" min="0" step="0.1"></label>
+        <label>走廊平均宽度（m）<input id="corridorWidth" type="number" min="0" step="0.1"></label>
+        <label>中间整砖带宽（m）<input id="corridorCenter" type="number" min="0" step="0.1"></label>
+      </div>
+      <p class="helper">修改内容自动保存在当前浏览器。需要把修改结果发给别人时，点击“复制当前版本链接”。</p>
+    </section>
+
+    <section class="panel" id="summarySection">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow eyebrow--dark">采购汇总</div>
+          <h2>各规格面积与数量</h2>
+        </div>
+        <div class="summary-badge" id="wasteBadge">含10%损耗</div>
+      </div>
+      <div class="table-wrap">
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>砖规格</th>
+              <th>使用位置</th>
+              <th>净面积（㎡）</th>
+              <th>单片面积（㎡）</th>
+              <th>净片数</th>
+              <th>建议采购（片）</th>
+              <th>采购折合面积（㎡）</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="corridor-grid">
+      <article class="panel corridor-card">
+        <div class="eyebrow eyebrow--dark">走廊排砖</div>
+        <h2>60×120cm 两侧补砖</h2>
+        <div class="corridor-visual" aria-hidden="true">
+          <span class="edge"></span><span class="center"></span><span class="edge"></span>
+        </div>
+        <dl>
+          <div><dt>走廊总面积</dt><dd id="corridorArea">—</dd></div>
+          <div><dt>中间整砖带</dt><dd id="corridorCenterArea">—</dd></div>
+          <div><dt>两边补砖合计</dt><dd id="corridorEdgeArea">—</dd></div>
+          <div><dt>每边补砖</dt><dd id="corridorOneEdge">—</dd></div>
+        </dl>
+      </article>
+      <article class="panel method-card">
+        <div class="eyebrow eyebrow--dark">计算口径</div>
+        <h2>本表如何计算</h2>
+        <ul>
+          <li>开放厨房地面计入80×80cm。</li>
+          <li>卫生间及封闭厨房地面计入40×40cm。</li>
+          <li>墙砖面积＝贴砖墙长 × 墙砖高度。</li>
+          <li>采购片数向上取整，包装箱数需再按供应商装箱规格换算。</li>
+          <li>走廊两边补砖已计入走廊总面积，不重复增加。</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel rooms-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow eyebrow--dark">逐房明细</div>
+          <h2>1—32号房贴砖面积</h2>
+        </div>
+        <div class="legend no-print"><span></span>蓝色为可修改输入</div>
+      </div>
+      <div class="table-wrap table-wrap--rooms">
+        <table class="rooms-table">
+          <thead>
+            <tr>
+              <th rowspan="2">房号</th>
+              <th colspan="6">输入数据</th>
+              <th colspan="5">自动计算面积（㎡）</th>
+            </tr>
+            <tr>
+              <th>套内地面</th>
+              <th>卫生间地面</th>
+              <th>封闭厨房</th>
+              <th>封闭厨房地面</th>
+              <th>卫生间周长</th>
+              <th>厨房贴墙长度</th>
+              <th>80×80地面</th>
+              <th>40×40地面</th>
+              <th>卫生间墙砖</th>
+              <th>厨房墙砖</th>
+              <th>墙砖合计</th>
+            </tr>
+          </thead>
+          <tbody id="roomsBody"></tbody>
+          <tfoot id="roomsFoot"></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="footnotes">
+      <h2>复核说明</h2>
+      <p>图纸中10号房未直接标号，本表按9号与11号之间的顺序推定。约1400㎡仅作为范围复核，不强行分摊到瓷砖面积；现场尺寸、门洞扣减、墙面做法及封闭厨房房号应在下单前确认。</p>
+      <p class="timestamp">页面版本：<span id="updatedAt"></span></p>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
