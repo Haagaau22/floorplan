@@ -46,6 +46,7 @@ def main() -> int:
         method="PUT",
         headers={
             "Content-Type": "application/json",
+            "User-Agent": "floorplan-agent/1.0 (+https://floorplan.221231.xyz)",
             "X-Floorplan-Timestamp": timestamp,
             "X-Floorplan-Signature": signature,
         },

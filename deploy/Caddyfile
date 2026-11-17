@@ -2,7 +2,7 @@ floorplan.221231.xyz {
 	encode zstd gzip
 
 	handle /api/* {
-		reverse_proxy {$FLOORPLAN_WORKER_ORIGIN} {
+		reverse_proxy https://floorplan-api.haagaau.workers.dev {
 			header_up Host {upstream_hostport}
 			header_up -X-Forwarded-Host
 		}
