@@ -1,0 +1,73 @@
+{
+	admin 127.0.0.1:2019
+}
+
+apartment.221231.xyz {
+	handle /api/* {
+		reverse_proxy 127.0.0.1:18080
+	}
+
+	handle /prototypes/* {
+		root * /opt/apartment
+		file_server
+	}
+
+	handle {
+		root * /opt/apartment/current/frontend/dist
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+ads.221231.xyz {
+	root * /srv/ads
+	file_server
+}
+
+show.221231.xyz {
+	@old_apartment_tiles_path path /apartment-tiles /apartment-tiles/
+	redir @old_apartment_tiles_path /apartment/slh/tiles/ 308
+
+	@apartment_tiles_root path /apartment/slh/tiles
+	redir @apartment_tiles_root /apartment/slh/tiles/ 308
+
+	handle_path /apartment/slh/tiles/* {
+		root * /srv/show/apartment-tiles
+		file_server
+	}
+
+	handle {
+		root * /srv/show/portal
+		file_server
+	}
+}
+
+# 叉烧 App 香港加速线路（todolist-* 为 1.0.43 及以前旧版 App 保留）：手机 → 香港 → Cloudflare Worker（长连接复用）
+(todolist_relay) {
+	reverse_proxy {args.0} {
+		header_up Host {args.1}
+		header_up -X-Forwarded-Host
+		transport http {
+			keepalive 5m
+			keepalive_idle_conns 32
+			dial_timeout 5s
+			response_header_timeout 30s
+		}
+	}
+}
+
+todolist-hk.221231.xyz {
+	import todolist_relay https://todolist.221231.xyz todolist.221231.xyz
+}
+
+todolist-dev-hk.221231.xyz {
+	import todolist_relay https://todolist-dev.221231.xyz todolist-dev.221231.xyz
+}
+
+charsiu-hk.221231.xyz {
+	import todolist_relay https://charsiu.221231.xyz charsiu.221231.xyz
+}
+
+charsiu-dev-hk.221231.xyz {
+	import todolist_relay https://charsiu-dev.221231.xyz charsiu-dev.221231.xyz
+}

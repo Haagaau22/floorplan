@@ -1,0 +1,19 @@
+.DS_Store
+
+# 本地开发环境与依赖
+.env
+.env.*
+!.env.example
+node_modules/
+
+# Python 临时文件
+__pycache__/
+*.py[cod]
+
+# 项目数据由 Cloudflare R2 保存，不进入代码仓库
+data/
+*.dwg
+*.dxf
+
+# 旧的临时展示入口不属于 Floorplan 项目
+sites/show/
