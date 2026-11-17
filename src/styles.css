@@ -334,8 +334,8 @@ button { color: inherit; }
 .semantic-opening-cut { stroke: #faf9f3; stroke-linecap: butt; }
 .semantic-window { stroke: #4d7775; stroke-width: 2.3; vector-effect: non-scaling-stroke; }
 .semantic-door { fill: none; stroke: #52615d; stroke-width: 1.1; vector-effect: non-scaling-stroke; }
-.semantic-instances { fill: none; stroke: #596662; stroke-width: .52; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; }
-.semantic-instances .template-detail { stroke-width: .42; }
+.semantic-instances { fill: none; stroke: #596662; stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.semantic-instances .template-detail { stroke-width: 14; }
 .semantic-instances .template-fill { fill: #d8dfdc; }
 .semantic-excluded { fill: #b8afa1; fill-opacity: .22; stroke: #8f8678; stroke-width: 1.1; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .semantic-room-tag, .semantic-area-tag { pointer-events: none; }
