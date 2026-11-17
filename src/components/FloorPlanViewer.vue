@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, reactive, ref } from 'vue'
-import { cadToLocal, clampViewBox, distanceMm, formatArea, formatDistance, localToCad, pointsToPath, polygonAreaM2 } from '../geometry'
+import { cadToLocal, clampViewBox, distanceMm, formatArea, formatDistance, localToCad, pointsToPath, polygonAreaM2, wheelZoomFactor } from '../geometry'
 import type { FloorplanData, FloorplanSpace, LocalViewBox, Point, ToolMode } from '../types'
 import IconGlyph from './IconGlyph.vue'
 import InfoPanel from './InfoPanel.vue'
@@ -80,7 +80,7 @@ function eventToLocal(event: { clientX: number; clientY: number }): Point {
 function onWheel(event: WheelEvent) {
   event.preventDefault()
   const [x, y] = eventToLocal(event)
-  zoomAt(event.deltaY > 0 ? 1.14 : 0.86, x, y)
+  zoomAt(wheelZoomFactor(event.deltaY, event.deltaMode, event.ctrlKey), x, y)
 }
 
 function onPointerDown(event: PointerEvent) {
@@ -105,7 +105,7 @@ function onPointerMove(event: PointerEvent) {
     if (previousPinchDistance > 0 && distance > 0) {
       const midpoint = { clientX: (values[0].x + values[1].x) / 2, clientY: (values[0].y + values[1].y) / 2 }
       const [x, y] = eventToLocal(midpoint)
-      zoomAt(previousPinchDistance / distance, x, y)
+      zoomAt(Math.pow(previousPinchDistance / distance, 0.55), x, y)
       didDrag.value = true
     }
     previousPinchDistance = distance

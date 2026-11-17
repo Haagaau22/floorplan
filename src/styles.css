@@ -155,7 +155,7 @@ button { color: inherit; }
 .cad-path--annotations { stroke: #3e4b47; stroke-width: .6; }
 
 .cad-text-layer { fill: #293632; font-family: Arial, "PingFang SC", sans-serif; pointer-events: none; }
-.space-hit { fill: transparent; stroke: transparent; stroke-width: 90; cursor: pointer; transition: fill .16s ease, stroke .16s ease; }
+.space-hit { fill: transparent; stroke: transparent; stroke-width: 1.5; vector-effect: non-scaling-stroke; pointer-events: all; cursor: pointer; transition: fill .16s ease, stroke .16s ease; }
 .space-hit:hover, .space-hit:focus-visible { fill: rgba(229, 109, 66, .16); stroke: rgba(229, 109, 66, .88); outline: none; }
 .space-hit--selected { fill: rgba(229, 109, 66, .2); stroke: var(--accent); }
 .selected-marker { pointer-events: none; }
@@ -337,8 +337,7 @@ button { color: inherit; }
 .semantic-instances { fill: none; stroke: #596662; stroke-width: .52; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; }
 .semantic-instances .template-detail { stroke-width: .42; }
 .semantic-instances .template-fill { fill: #d8dfdc; }
-.semantic-excluded { fill: url(#semantic-excluded-hatch); stroke: #978f82; stroke-width: 1.1; vector-effect: non-scaling-stroke; }
-.excluded-hatch-line { stroke: #aaa296; stroke-width: 22; }
+.semantic-excluded { fill: #b8afa1; fill-opacity: .22; stroke: #8f8678; stroke-width: 1.1; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .semantic-room-tag, .semantic-area-tag { pointer-events: none; }
 .semantic-room-tag rect { fill: #17463f; stroke: #fffaf2; stroke-width: 24; }
 .semantic-room-tag text, .semantic-area-tag text { text-anchor: middle; dominant-baseline: central; font-family: Inter, "PingFang SC", sans-serif; font-weight: 760; }

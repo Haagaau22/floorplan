@@ -7,6 +7,7 @@ import {
   localToCad,
   polygonAreaM2,
   polylineLengthMm,
+  wheelZoomFactor,
 } from './geometry'
 
 describe('CAD geometry', () => {
@@ -31,5 +32,11 @@ describe('CAD geometry', () => {
     expect(formatDistance(920)).toBe('920 mm')
     expect(formatDistance(2_500)).toBe('2.50 m')
     expect(formatDistance(15_000)).toBe('15.0 m')
+  })
+
+  it('keeps trackpad zoom gradual and bounded', () => {
+    expect(wheelZoomFactor(10, 0, true)).toBeCloseTo(1.01, 3)
+    expect(wheelZoomFactor(-10, 0, true)).toBeCloseTo(0.99, 3)
+    expect(wheelZoomFactor(1_000)).toBeCloseTo(Math.exp(0.12), 6)
   })
 })

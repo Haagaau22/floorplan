@@ -62,6 +62,13 @@ export function clampViewBox(viewBox: LocalViewBox, drawingWidth: number, drawin
   }
 }
 
+export function wheelZoomFactor(deltaY: number, deltaMode = 0, isTrackpadPinch = false): number {
+  const pixels = deltaMode === 1 ? deltaY * 16 : deltaMode === 2 ? deltaY * 800 : deltaY
+  const clampedDelta = Math.min(Math.max(pixels, -80), 80)
+  const sensitivity = isTrackpadPinch ? 0.001 : 0.0015
+  return Math.exp(clampedDelta * sensitivity)
+}
+
 export function formatDistance(mm: number): string {
   if (mm < 1_000) return `${Math.round(mm)} mm`
   return `${(mm / 1_000).toFixed(mm < 10_000 ? 2 : 1)} m`

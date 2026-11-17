@@ -75,13 +75,12 @@ def render(source: Path, target: Path, level_id: str | None = None) -> None:
     svg = f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="{-margin:g} {-margin:g} {width + 2 * margin:g} {height + 2 * margin:g}">
 <defs>
-  <pattern id="excluded-hatch" width="180" height="180" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="180" stroke="#a29c91" stroke-width="28"/></pattern>
   {''.join(template_symbols)}
 </defs>
 <style>
   .paper {{ fill:#fbfaf6; }}
   .space-zone {{ fill:#f7f4ec; stroke:none; }}
-  .excluded-zone {{ fill:url(#excluded-hatch); stroke:#8b857b; stroke-width:24; }}
+  .excluded-zone {{ fill:#b8afa1; fill-opacity:.22; stroke:#8b857b; stroke-width:24; stroke-dasharray:120 72; }}
   .walls polyline {{ fill:none; stroke:#18201f; stroke-linecap:square; stroke-linejoin:miter; }}
   .opening-cut {{ stroke:#fbfaf6; stroke-linecap:butt; }}
   .window-line {{ stroke:#4d7775; stroke-width:64; }}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { clampViewBox, distanceMm, formatArea, formatDistance, polygonAreaM2 } from '../geometry'
+import { clampViewBox, distanceMm, formatArea, formatDistance, polygonAreaM2, wheelZoomFactor } from '../geometry'
 import type { LocalViewBox, Point, SemanticFloorplanData, SemanticOpening, SemanticSpace, ToolMode } from '../types'
 import IconGlyph from './IconGlyph.vue'
 import SemanticInfoPanel from './SemanticInfoPanel.vue'
@@ -89,7 +89,7 @@ function eventToLocal(event: { clientX: number; clientY: number }): Point {
 function onWheel(event: WheelEvent) {
   event.preventDefault()
   const [x, y] = eventToLocal(event)
-  zoomAt(event.deltaY > 0 ? 1.14 : 0.86, x, y)
+  zoomAt(wheelZoomFactor(event.deltaY, event.deltaMode, event.ctrlKey), x, y)
 }
 
 function onPointerDown(event: PointerEvent) {
@@ -112,7 +112,7 @@ function onPointerMove(event: PointerEvent) {
     const distance = Math.hypot(values[1].x - values[0].x, values[1].y - values[0].y)
     if (previousPinchDistance > 0 && distance > 0) {
       const [x, y] = eventToLocal({ clientX: (values[0].x + values[1].x) / 2, clientY: (values[0].y + values[1].y) / 2 })
-      zoomAt(previousPinchDistance / distance, x, y)
+      zoomAt(Math.pow(previousPinchDistance / distance, 0.55), x, y)
       didDrag.value = true
     }
     previousPinchDistance = distance
@@ -190,9 +190,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
           @click="onCanvasClick"
         >
           <defs>
-            <pattern id="semantic-excluded-hatch" width="180" height="180" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="180" class="excluded-hatch-line" />
-            </pattern>
             <g v-for="template in data.templates" :id="`semantic-template-${template.id}`" :key="template.id">
               <path v-for="(path, index) in template.geometry.paths" :key="`p-${index}`" :d="pathD(path.points, path.closed)" :class="`template-${path.role ?? 'outline'}`" />
               <circle v-for="(circle, index) in template.geometry.circles ?? []" :key="`c-${index}`" :cx="circle.center[0]" :cy="circle.center[1]" :r="circle.radius" :class="`template-${circle.role ?? 'outline'}`" />
