@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://floorplan.221231.xyz/schema/floorplan-v1.json",
+  "title": "Floorplan project",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "project",
+    "coordinateSystem",
+    "viewport",
+    "layers",
+    "entities",
+    "spaces",
+    "dimensions",
+    "statistics"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "project": {
+      "type": "object",
+      "required": ["id", "name", "source", "generatedAt", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "sourceDrawing": { "type": "string" },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "status": { "enum": ["working-baseline", "verified"] },
+        "statusNote": { "type": "string" }
+      }
+    },
+    "coordinateSystem": {
+      "type": "object",
+      "required": ["units", "xAxis", "yAxis", "origin"],
+      "additionalProperties": false,
+      "properties": {
+        "units": { "const": "mm" },
+        "xAxis": { "const": "right" },
+        "yAxis": { "const": "up" },
+        "origin": { "$ref": "#/$defs/point" }
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "required": ["minX", "minY", "maxX", "maxY"],
+      "additionalProperties": false,
+      "properties": {
+        "minX": { "type": "number" },
+        "minY": { "type": "number" },
+        "maxX": { "type": "number" },
+        "maxY": { "type": "number" }
+      }
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/layer" }
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/pathEntity" },
+          { "$ref": "#/$defs/textEntity" }
+        ]
+      }
+    },
+    "spaces": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/space" }
+    },
+    "dimensions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/dimension" }
+    },
+    "statistics": {
+      "type": "object",
+      "required": ["sourceEntities", "exportedEntities", "pathCount", "textCount", "vertexCount", "spaceCount"],
+      "additionalProperties": false,
+      "properties": {
+        "sourceEntities": { "type": "integer", "minimum": 0 },
+        "exportedEntities": { "type": "integer", "minimum": 1 },
+        "pathCount": { "type": "integer", "minimum": 1 },
+        "textCount": { "type": "integer", "minimum": 0 },
+        "vertexCount": { "type": "integer", "minimum": 2 },
+        "spaceCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "layer": {
+      "type": "object",
+      "required": ["id", "name", "defaultVisible", "entityCount"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "defaultVisible": { "type": "boolean" },
+        "entityCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "pathEntity": {
+      "type": "object",
+      "required": ["id", "kind", "layerId", "points", "closed"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "const": "path" },
+        "layerId": { "type": "string" },
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/point" }
+        },
+        "closed": { "type": "boolean" }
+      }
+    },
+    "textEntity": {
+      "type": "object",
+      "required": ["id", "kind", "layerId", "position", "content", "height", "rotation"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "const": "text" },
+        "layerId": { "type": "string" },
+        "position": { "$ref": "#/$defs/point" },
+        "content": { "type": "string" },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "rotation": { "type": "number" }
+      }
+    },
+    "space": {
+      "type": "object",
+      "required": ["id", "label", "type", "labelPosition", "selectionBoundary", "boundaryStatus", "metrics", "business", "verification"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "type": { "enum": ["room", "corridor"] },
+        "labelPosition": { "$ref": "#/$defs/point" },
+        "selectionBoundary": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "$ref": "#/$defs/point" }
+        },
+        "boundaryStatus": { "enum": ["selection-region", "verified"] },
+        "metrics": {
+          "type": "object",
+          "required": ["areaM2", "perimeterM"],
+          "additionalProperties": false,
+          "properties": {
+            "areaM2": { "type": ["number", "null"], "minimum": 0 },
+            "perimeterM": { "type": ["number", "null"], "minimum": 0 }
+          }
+        },
+        "business": { "type": "object" },
+        "verification": {
+          "type": "object",
+          "required": ["status", "note"],
+          "additionalProperties": false,
+          "properties": {
+            "status": { "enum": ["estimated", "verified", "needs-review"] },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    },
+    "dimension": {
+      "type": "object",
+      "required": ["id", "measurement", "start", "end"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "measurement": { "type": "number", "minimum": 0 },
+        "start": { "$ref": "#/$defs/point" },
+        "end": { "$ref": "#/$defs/point" },
+        "textOverride": { "type": "string" }
+      }
+    }
+  }
+}

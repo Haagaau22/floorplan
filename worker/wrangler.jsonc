@@ -1,0 +1,19 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "floorplan-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-17",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "ALLOWED_CLOCK_SKEW_SECONDS": "300"
+  },
+  "r2_buckets": [
+    {
+      "binding": "FLOORPLANS",
+      "bucket_name": "floorplan-data",
+      "preview_bucket_name": "floorplan-data-preview"
+    }
+  ]
+}

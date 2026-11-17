@@ -1,0 +1,35 @@
+{
+  "name": "floorplan",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "vue-tsc --noEmit",
+    "worker:check": "tsc -p worker/tsconfig.json --noEmit",
+    "worker:dev": "wrangler dev --config worker/wrangler.jsonc",
+    "worker:deploy": "wrangler deploy --config worker/wrangler.jsonc",
+    "generate:data": "uv run python scripts/export_floorplan.py data/generated/apartment.dxf data/projects/apartment/floorplan.json --baseline data/apartment-tiles-baseline.json",
+    "validate:data": "uv run python scripts/validate_floorplan.py data/projects/apartment/floorplan.json"
+  },
+  "dependencies": {
+    "@tanstack/vue-query": "^5.107.1",
+    "@tanstack/vue-table": "^9.3.1",
+    "ajv": "^8.20.0",
+    "vue": "^3.5.45"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261117.1",
+    "@types/node": "^25.9.9",
+    "@vitejs/plugin-vue": "^6.0.11",
+    "jsdom": "^27.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "^4.0.18",
+    "vue-tsc": "^3.3.14",
+    "wrangler": "^4.163.0"
+  }
+}
