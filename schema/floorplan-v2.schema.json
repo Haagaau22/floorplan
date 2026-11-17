@@ -156,7 +156,9 @@
         "boundary": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/point" } },
         "labelPosition": { "$ref": "#/$defs/point" },
         "labelStyle": { "enum": ["room-tag", "area-name", "hidden"] },
-        "boundaryStatus": { "enum": ["estimated", "verified"] }
+        "boundaryStatus": { "enum": ["estimated", "verified"] },
+        "boundarySource": { "enum": ["generated", "manual"] },
+        "boundaryUpdatedAt": { "type": "string", "format": "date-time" }
       }
     },
     "instance": {

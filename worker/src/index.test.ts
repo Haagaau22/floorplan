@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createWriteSignature, validateFloorplanPayload, verifyWriteSignature } from './index'
+import { createWriteSignature, preserveManualBoundaries, validateFloorplanPayload, verifyEditorToken, verifyWriteSignature } from './index'
 
 const secret = 'test-only-secret-with-enough-entropy'
 const timestamp = '1794900000'
@@ -35,6 +35,48 @@ describe('Worker HMAC writes', () => {
     const body = new TextEncoder().encode('{}').buffer
     const request = await signedRequest(body)
     await expect(verifyWriteSignature(request, body, secret, 300, Number(timestamp) + 301)).resolves.toBe(false)
+  })
+})
+
+describe('Worker browser editor authentication', () => {
+  it('accepts the configured bearer token', () => {
+    const request = new Request('https://floorplan.example/api/projects/apartment', {
+      headers: { Authorization: 'Bearer editor-secret' },
+    })
+    expect(verifyEditorToken(request, 'editor-secret')).toBe(true)
+  })
+
+  it('rejects missing or incorrect bearer tokens', () => {
+    expect(verifyEditorToken(new Request('https://floorplan.example'), 'editor-secret')).toBe(false)
+    expect(verifyEditorToken(new Request('https://floorplan.example', {
+      headers: { Authorization: 'Bearer wrong' },
+    }), 'editor-secret')).toBe(false)
+  })
+})
+
+describe('manual boundary preservation', () => {
+  it('keeps a browser-confirmed boundary during a later generated upload', () => {
+    const existing = {
+      schemaVersion: '2.0.0' as const,
+      project: { id: 'apartment' }, canvas: { width: 10, height: 10 }, templates: [],
+      levels: [{ id: 'level-01', walls: [], openings: [], instances: [], spaces: [{
+        id: 'room-3', boundary: [[0, 0], [5, 0], [5, 5]] as [number, number][], labelPosition: [2, 2] as [number, number],
+        boundaryStatus: 'verified' as const, boundarySource: 'manual' as const, boundaryUpdatedAt: '2026-11-18T00:00:00Z',
+      }] }],
+    }
+    const incoming = {
+      schemaVersion: '2.0.0' as const,
+      project: { id: 'apartment' }, canvas: { width: 10, height: 10 }, templates: [],
+      levels: [{ id: 'level-01', walls: [], openings: [], instances: [], spaces: [{
+        id: 'room-3', boundary: [[0, 0], [9, 0], [9, 9]] as [number, number][], labelPosition: [4, 4] as [number, number], boundarySource: 'generated' as const,
+      }] }],
+    }
+    const merged = preserveManualBoundaries(incoming, existing)
+    expect(merged.levels[0].spaces[0]).toMatchObject({
+      boundary: [[0, 0], [5, 0], [5, 5]],
+      labelPosition: [2, 2],
+      boundarySource: 'manual',
+    })
   })
 })
 

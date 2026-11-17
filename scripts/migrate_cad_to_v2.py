@@ -40,25 +40,21 @@ ROOM_BOUNDARIES_LOCAL: dict[int, tuple[int, int, int, int] | list[list[int]]] = 
         [20_653, 15_745],
         [13_313, 15_745],
     ],
-    # Rooms 3 and 4 share a stepped wall: the step begins at the corridor-side
-    # partition (x=23_321), not at the furniture outlines inside room 4.
+    # The toilet projecting upward at the corridor side belongs to room 4.
+    # Furniture outlines inside either apartment must not alter this ownership.
     3: [
         [13_313, 15_854],
         [20_653, 15_854],
         [20_653, 16_046],
         [23_321, 16_046],
-        [23_321, 17_251],
-        [24_901, 17_251],
-        [24_901, 19_080],
-        [23_321, 19_080],
         [23_321, 18_644],
         [13_313, 18_644],
     ],
     4: [
         [13_313, 18_760],
         [23_321, 18_760],
-        [23_321, 19_200],
-        [24_901, 19_200],
+        [23_321, 17_251],
+        [24_901, 17_251],
         [24_901, 22_094],
         [13_313, 22_094],
     ],
@@ -99,7 +95,14 @@ ROOM_BOUNDARIES_LOCAL: dict[int, tuple[int, int, int, int] | list[list[int]]] = 
     25: (84_638, 1_028, 87_644, 14_270),
     26: (80_949, 1_028, 84_521, 14_270),
     27: (77_814, 1_028, 80_826, 14_270),
-    28: (57_545, 1_028, 60_736, 13_876),
+    28: [
+        [57_545, 1_028],
+        [60_736, 1_028],
+        [60_736, 8_534],
+        [59_420, 8_534],
+        [59_420, 13_876],
+        [57_545, 13_876],
+    ],
     29: (54_158, 1_028, 57_427, 13_876),
     30: (50_611, 1_028, 54_041, 13_876),
     # Rooms 31 and 32 are divided by one continuous vertical wall. The lower
@@ -136,6 +139,13 @@ EXCLUDED_RIGHT_LOCAL: list[list[int]] = [
     [62_383, 10_563],
     [62_383, 8_534],
     [60_994, 8_534],
+]
+
+WATER_ELECTRIC_ROOM_LOCAL: list[list[int]] = [
+    [59_540, 8_755],
+    [60_945, 8_755],
+    [60_945, 13_876],
+    [59_540, 13_876],
 ]
 
 
@@ -394,7 +404,19 @@ def migrate(args: argparse.Namespace) -> dict:
             ),
             "labelStyle": "room-tag",
             "boundaryStatus": "verified",
+            "boundarySource": "generated",
         })
+
+    spaces.append({
+        "id": "utility-water-electric",
+        "kind": "utility",
+        "name": "水电房",
+        "boundary": WATER_ELECTRIC_ROOM_LOCAL,
+        "labelPosition": polygon_visual_center(WATER_ELECTRIC_ROOM_LOCAL),
+        "labelStyle": "area-name",
+        "boundaryStatus": "verified",
+        "boundarySource": "generated",
+    })
 
     # Non-project land immediately left of the corridor beside room 27. This
     # polygon follows the exact hatched outline in the CAD fixture.
@@ -406,6 +428,7 @@ def migrate(args: argparse.Namespace) -> dict:
         "labelPosition": [integer(1_596_500 - xmin), integer(ymax - 630_000)],
         "labelStyle": "area-name",
         "boundaryStatus": "verified",
+        "boundarySource": "generated",
     })
 
     return {

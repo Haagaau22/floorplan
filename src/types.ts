@@ -103,7 +103,7 @@ export interface FloorplanData {
   }
 }
 
-export type ToolMode = 'pan' | 'distance' | 'area'
+export type ToolMode = 'pan' | 'distance' | 'area' | 'edit'
 
 export interface LocalViewBox {
   x: number
@@ -163,6 +163,8 @@ export interface SemanticSpace {
   labelPosition: Point
   labelStyle?: 'room-tag' | 'area-name' | 'hidden'
   boundaryStatus?: 'estimated' | 'verified'
+  boundarySource?: 'generated' | 'manual'
+  boundaryUpdatedAt?: string
 }
 
 export interface SemanticInstance {

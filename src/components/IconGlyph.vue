@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  name: 'hand' | 'ruler' | 'area' | 'layers' | 'fit' | 'plus' | 'minus' | 'close' | 'search'
+  name: 'hand' | 'ruler' | 'area' | 'edit' | 'layers' | 'fit' | 'plus' | 'minus' | 'close' | 'search'
 }>()
 </script>
 
@@ -14,6 +14,9 @@ defineProps<{
     </template>
     <template v-else-if="name === 'area'">
       <path d="m5 18 2-11 10-2 2 12-14 1Z" /><circle cx="5" cy="18" r="1.4" /><circle cx="7" cy="7" r="1.4" /><circle cx="17" cy="5" r="1.4" /><circle cx="19" cy="17" r="1.4" />
+    </template>
+    <template v-else-if="name === 'edit'">
+      <path d="m4 16-.8 4 4-.8L18.5 7.9l-3.2-3.2L4 16Z" /><path d="m13.8 6.2 3.2 3.2M4 16l3.2 3.2" />
     </template>
     <template v-else-if="name === 'layers'">
       <path d="m12 3 8 4-8 4-8-4 8-4Z" /><path d="m4 11 8 4 8-4M4 15l8 4 8-4" />

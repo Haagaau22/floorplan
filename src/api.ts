@@ -10,3 +10,20 @@ export async function fetchFloorplan(projectId = 'apartment'): Promise<AnyFloorp
   }
   return response.json() as Promise<AnyFloorplanData>
 }
+
+export async function saveFloorplan(data: AnyFloorplanData, editorToken: string): Promise<{ uploadedAt: string }> {
+  const response = await fetch(`/api/projects/${encodeURIComponent(data.project.id)}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${editorToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!response.ok) {
+    const detail = await response.text()
+    throw new Error(`保存失败（${response.status}）：${detail}`)
+  }
+  return response.json() as Promise<{ uploadedAt: string }>
+}

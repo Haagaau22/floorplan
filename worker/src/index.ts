@@ -5,6 +5,7 @@ import semanticFloorplanSchema from '../../schema/floorplan-v2.schema.json'
 interface Env {
   FLOORPLANS: R2Bucket
   HMAC_SECRET: string
+  EDITOR_TOKEN?: string
   ALLOWED_CLOCK_SKEW_SECONDS?: string
 }
 
@@ -39,7 +40,14 @@ interface FloorplanPayloadV2 {
     id: string
     walls: Array<{ id: string; centerline: Array<[number, number]> }>
     openings: Array<{ id: string; wallId: string; segmentIndex: number; offset: number; width: number }>
-    spaces: Array<{ id: string }>
+    spaces: Array<{
+      id: string
+      boundary: Array<[number, number]>
+      labelPosition: [number, number]
+      boundaryStatus?: 'estimated' | 'verified'
+      boundarySource?: 'generated' | 'manual'
+      boundaryUpdatedAt?: string
+    }>
     instances: Array<{ id: string; templateId: string; spaceId?: string }>
   }>
 }
@@ -84,6 +92,14 @@ function safeEqual(first: string, second: string): boolean {
     result |= first.charCodeAt(index) ^ second.charCodeAt(index)
   }
   return result === 0
+}
+
+export function verifyEditorToken(request: Request, expectedToken?: string): boolean {
+  if (!expectedToken) return false
+  const authorization = request.headers.get('Authorization') ?? ''
+  if (!authorization.startsWith('Bearer ')) return false
+  const providedToken = authorization.slice('Bearer '.length)
+  return safeEqual(providedToken, expectedToken)
 }
 
 export async function createWriteSignature(
@@ -241,13 +257,32 @@ export function validateFloorplanPayload(payload: unknown, projectId: string): {
   return { valid: true, value }
 }
 
+export function preserveManualBoundaries(incoming: FloorplanPayloadV2, existing: FloorplanPayloadV2): FloorplanPayloadV2 {
+  const existingLevels = new Map(existing.levels.map((level) => [level.id, level]))
+  for (const incomingLevel of incoming.levels) {
+    const existingLevel = existingLevels.get(incomingLevel.id)
+    if (!existingLevel) continue
+    const existingSpaces = new Map(existingLevel.spaces.map((space) => [space.id, space]))
+    for (const incomingSpace of incomingLevel.spaces) {
+      const existingSpace = existingSpaces.get(incomingSpace.id)
+      if (existingSpace?.boundarySource !== 'manual' || incomingSpace.boundarySource === 'manual') continue
+      incomingSpace.boundary = existingSpace.boundary
+      incomingSpace.labelPosition = existingSpace.labelPosition
+      incomingSpace.boundaryStatus = existingSpace.boundaryStatus
+      incomingSpace.boundarySource = 'manual'
+      incomingSpace.boundaryUpdatedAt = existingSpace.boundaryUpdatedAt
+    }
+  }
+  return incoming
+}
+
 async function readProject(env: Env, projectId: string, headOnly = false): Promise<Response> {
   const object = await env.FLOORPLANS.get(`projects/${projectId}/floorplan.json`)
   if (object === null) return jsonResponse({ error: 'project_not_found' }, 404)
   const headers = new Headers()
   object.writeHttpMetadata(headers)
   headers.set('Content-Type', 'application/json; charset=utf-8')
-  headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+  headers.set('Cache-Control', 'no-store')
   headers.set('ETag', object.httpEtag)
   headers.set('Content-Length', String(object.size))
   headers.set('X-Content-Type-Options', 'nosniff')
@@ -255,7 +290,7 @@ async function readProject(env: Env, projectId: string, headOnly = false): Promi
 }
 
 async function writeProject(request: Request, env: Env, projectId: string): Promise<Response> {
-  if (!env.HMAC_SECRET) return jsonResponse({ error: 'write_not_configured' }, 503)
+  if (!env.HMAC_SECRET && !env.EDITOR_TOKEN) return jsonResponse({ error: 'write_not_configured' }, 503)
   const declaredLength = Number(request.headers.get('Content-Length') ?? 0)
   if (declaredLength > MAX_BODY_BYTES) return jsonResponse({ error: 'payload_too_large' }, 413)
 
@@ -263,7 +298,9 @@ async function writeProject(request: Request, env: Env, projectId: string): Prom
   if (body.byteLength === 0) return jsonResponse({ error: 'empty_payload' }, 400)
   if (body.byteLength > MAX_BODY_BYTES) return jsonResponse({ error: 'payload_too_large' }, 413)
   const clockSkew = Number(env.ALLOWED_CLOCK_SKEW_SECONDS ?? 300)
-  if (!await verifyWriteSignature(request, body, env.HMAC_SECRET, clockSkew)) {
+  const authorized = verifyEditorToken(request, env.EDITOR_TOKEN)
+    || Boolean(env.HMAC_SECRET && await verifyWriteSignature(request, body, env.HMAC_SECRET, clockSkew))
+  if (!authorized) {
     return jsonResponse({ error: 'invalid_signature' }, 401)
   }
 
@@ -273,14 +310,29 @@ async function writeProject(request: Request, env: Env, projectId: string): Prom
   } catch {
     return jsonResponse({ error: 'invalid_json' }, 400)
   }
+  if ((payload as { schemaVersion?: unknown } | null)?.schemaVersion === '2.0.0') {
+    const existingObject = await env.FLOORPLANS.get(`projects/${projectId}/floorplan.json`)
+    if (existingObject) {
+      try {
+        const existingPayload = JSON.parse(await existingObject.text()) as FloorplanPayloadV2
+        if (existingPayload.schemaVersion === '2.0.0') {
+          payload = preserveManualBoundaries(payload as FloorplanPayloadV2, existingPayload)
+        }
+      } catch {
+        // A corrupt previous object must not prevent replacing it with a valid upload.
+      }
+    }
+  }
   const validation = validateFloorplanPayload(payload, projectId)
   if (!validation.valid) return jsonResponse({ error: 'schema_validation_failed', details: validation.errors }, 422)
 
+  const storedBody = encoder.encode(JSON.stringify(payload))
+
   const uploadedAt = new Date().toISOString()
-  await env.FLOORPLANS.put(`projects/${projectId}/floorplan.json`, body, {
+  await env.FLOORPLANS.put(`projects/${projectId}/floorplan.json`, storedBody, {
     httpMetadata: {
       contentType: 'application/json; charset=utf-8',
-      cacheControl: 'public, max-age=60, stale-while-revalidate=300',
+      cacheControl: 'no-store',
     },
     customMetadata: {
       schemaVersion: validation.value.schemaVersion,

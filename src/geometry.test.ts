@@ -5,8 +5,12 @@ import {
   formatArea,
   formatDistance,
   localToCad,
+  pointInPolygon,
   polygonAreaM2,
+  polygonSelfIntersects,
+  polygonsOverlap,
   polylineLengthMm,
+  snapPointToBoundaries,
   wheelZoomFactor,
 } from './geometry'
 
@@ -38,5 +42,24 @@ describe('CAD geometry', () => {
     expect(wheelZoomFactor(10, 0, true)).toBeCloseTo(1.01, 3)
     expect(wheelZoomFactor(-10, 0, true)).toBeCloseTo(0.99, 3)
     expect(wheelZoomFactor(1_000)).toBeCloseTo(Math.exp(0.12), 6)
+  })
+
+  it('validates editable room polygons', () => {
+    const room = [[0, 0], [4_000, 0], [4_000, 3_000], [0, 3_000]] as [number, number][]
+    expect(pointInPolygon([2_000, 1_000], room)).toBe(true)
+    expect(pointInPolygon([5_000, 1_000], room)).toBe(false)
+    expect(polygonSelfIntersects([[0, 0], [4_000, 3_000], [0, 3_000], [4_000, 0]])).toBe(true)
+  })
+
+  it('allows shared walls but rejects overlapping ownership regions', () => {
+    const first = [[0, 0], [2_000, 0], [2_000, 2_000], [0, 2_000]] as [number, number][]
+    const adjacent = [[2_000, 0], [4_000, 0], [4_000, 2_000], [2_000, 2_000]] as [number, number][]
+    const overlap = [[1_500, 0], [3_000, 0], [3_000, 2_000], [1_500, 2_000]] as [number, number][]
+    expect(polygonsOverlap(first, adjacent)).toBe(false)
+    expect(polygonsOverlap(first, overlap)).toBe(true)
+  })
+
+  it('snaps an edited vertex to nearby room walls and adjacent axes', () => {
+    expect(snapPointToBoundaries([1_970, 1_020], [[[2_000, 0], [2_000, 3_000]]], [[0, 1_000]], 60)).toEqual([2_000, 1_000])
   })
 })
